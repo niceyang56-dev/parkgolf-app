@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>파크골프 참가 신청</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: #f0f5fa;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: #073b65;
+    }
+    .card {
+      max-width: 460px;
+      margin: 30px auto;
+      padding: 24px 16px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 3px 12px #0001;
+    }
+    h1 { font-size: 25px; }
+    p { font-size: 17px; line-height: 1.6; }
+    button {
+      width: 100%;
+      padding: 17px;
+      border: 0;
+      border-radius: 10px;
+      background: #086cc5;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🏌️ 파크골프 참가 신청</h1>
+    <p>홈 화면 설치 기능 시험용 페이지입니다.</p>
+    <p>기존 참가 신청 웹앱은 그대로 유지됩니다.</p>
+    <button onclick="openEvent()">
+      참가 신청 화면 열기
+    </button>
+  </div>
+
+  <script>
+    function openEvent() {
+      const url =
+        "https://script.google.com/macros/s/" +
+        "AKfycbySUNGARDitfAqrmdNQoCO1Pb55l72CsMGznm1eay56Zd24ufCZBXfBX467NbIDa4M9" +
+        "/exec?eventId=PG-2026-004";
+
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>
