@@ -1,13 +1,17 @@
 
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#086cc5">
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#086cc5">
+
   <title>파크골프 참가 신청</title>
+
   <style>
     body {
       margin: 0;
@@ -17,6 +21,7 @@
       text-align: center;
       color: #073b65;
     }
+
     .card {
       max-width: 460px;
       margin: 30px auto;
@@ -25,8 +30,14 @@
       border-radius: 16px;
       box-shadow: 0 3px 12px #0001;
     }
+
     h1 { font-size: 25px; }
-    p { font-size: 17px; line-height: 1.6; }
+
+    p {
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
     button {
       width: 100%;
       padding: 17px;
@@ -40,35 +51,44 @@
     }
   </style>
 </head>
+
 <body>
+
   <div class="card">
     <h1>🏌️ 파크골프 참가 신청</h1>
-    <p>홈 화면 설치 기능 시험용 페이지입니다.</p>
-    <p>기존 참가 신청 웹앱은 그대로 유지됩니다.</p>
+    <p>참가 신청 화면으로 연결하고 있습니다.</p>
+
     <button onclick="openEvent()">
       참가 신청 화면 열기
     </button>
   </div>
 
   <script>
+    /**************************************************
+     * 참가 신청 웹앱 연결
+     * 2026.11.23
+     * - 홈 화면 아이콘 실행 시 자동 연결
+     * - 기존 GS 웹앱 유지
+     **************************************************/
+
+    const EVENT_URL =
+      "https://script.google.com/macros/s/" +
+      "AKfycbySUNGARDitfAqrmdNQoCO1Pb55l72CsMGznm1eay56Zd24ufCZBXfBX467NbIDa4M9" +
+      "/exec?eventId=PG-2026-004";
+
     function openEvent() {
-      const url =
-        "https://script.google.com/macros/s/" +
-        "AKfycbySUNGARDitfAqrmdNQoCO1Pb55l72CsMGznm1eay56Zd24ufCZBXfBX467NbIDa4M9" +
-        "/exec?eventId=PG-2026-004";
-
-      window.location.href = url;
+      window.location.replace(EVENT_URL);
     }
-  </script>
 
-
-<script>
-  /**************************************************
-   * PWA 서비스 워커 등록
-   * 2026.11.23
-   **************************************************/
-  if ('serviceWorker' in navigator) {
+    // 페이지가 열리면 자동으로 참가 신청 화면 이동
     window.addEventListener('load', function() {
+      setTimeout(openEvent, 500);
+    });
+
+    /**************************************************
+     * PWA 서비스 워커 등록
+     **************************************************/
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('./sw.js')
         .then(function() {
@@ -77,9 +97,8 @@
         .catch(function(error) {
           console.error('PWA 등록 실패:', error);
         });
-    });
-  }
-</script>
- 
+    }
+  </script>
+
 </body>
 </html>
