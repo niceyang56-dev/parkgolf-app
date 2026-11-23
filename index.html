@@ -50,6 +50,11 @@
       color: white;
     }
 
+    .primary:disabled {
+      background: #538fbe;
+      cursor: wait;
+    }
+
     .accordion {
       margin-top: 14px;
       background: #e9f2fa;
@@ -89,6 +94,17 @@
     .instructions p {
       margin: 10px 0;
     }
+
+    .loading-note {
+      display: none;
+      margin-top: 12px;
+      font-size: 16px;
+      color: #49667d;
+    }
+
+    .loading-note.show {
+      display: block;
+    }
   </style>
 </head>
 
@@ -98,12 +114,23 @@
 
     <h1>🏌️ 파크골프 참가 신청</h1>
 
-    <!-- 첫 번째 버튼 -->
-    <button class="primary" onclick="openEvent()">
+    <!-- ① 참가 신청 화면 열기 -->
+    <button
+      class="primary"
+      id="openEventBtn"
+      onclick="openEvent()">
       참가 신청 화면 열기
     </button>
 
-    <!-- 두 번째 버튼 : 아코디언 -->
+    <div
+      class="loading-note"
+      id="loadingNote"
+      role="status"
+      aria-live="polite">
+      잠시만 기다려 주십시오.
+    </div>
+
+    <!-- ② 홈 화면 바로가기 아코디언 -->
     <button
       class="accordion"
       id="guideBtn"
@@ -115,12 +142,12 @@
 
     <div class="guide" id="installGuide">
 
-      <!-- 설치 버튼 -->
+      <!-- 설치하기 버튼 -->
       <button class="install" onclick="installApp()">
         📲 홈 화면에 설치하기
       </button>
 
-      <!-- 설치 안내문 -->
+      <!-- 브라우저별 설치 안내 -->
       <div class="instructions" id="instructions">
 
         <p>
@@ -159,8 +186,10 @@
      * 대회별 참가 신청 연결
      * 2026.11.23
      *
-     * 공유 URL의 eventId와 preview를 전달
-     * 기존 GS 웹앱은 수정하지 않음
+     * - 버튼 터치 즉시 연결 중 표시
+     * - 중복 터치 방지
+     * - 공유 URL의 eventId, preview 전달
+     * - 기존 GS 웹앱 유지
      **************************************************/
 
     const GS_BASE_URL =
@@ -170,6 +199,20 @@
 
     function openEvent() {
 
+      const btn =
+        document.getElementById("openEventBtn");
+
+      if (btn.disabled) return;
+
+      // 버튼 터치 즉시 표시 변경
+      btn.disabled = true;
+      btn.textContent =
+        "⏳ 참가 신청 화면 연결 중...";
+
+      document.getElementById("loadingNote")
+        .classList.add("show");
+
+      // 공유 URL에서 대회 정보 읽기
       const params =
         new URLSearchParams(window.location.search);
 
@@ -182,6 +225,7 @@
           ? requestedId
           : "PG-2026-004";
 
+      // 기존 GS 웹앱 주소 생성
       const url = new URL(GS_BASE_URL);
 
       url.searchParams.set("eventId", eventId);
@@ -190,8 +234,25 @@
         url.searchParams.set("preview", preview);
       }
 
+      // 참가 신청 화면으로 이동
       window.location.href = url.toString();
     }
+
+    /**************************************************
+     * 다른 화면에서 뒤로 돌아왔을 때
+     * 버튼 상태 복원
+     **************************************************/
+    window.addEventListener("pageshow", function() {
+
+      const btn =
+        document.getElementById("openEventBtn");
+
+      btn.disabled = false;
+      btn.textContent = "참가 신청 화면 열기";
+
+      document.getElementById("loadingNote")
+        .classList.remove("show");
+    });
 
     /**************************************************
      * 홈 화면 설치 안내 아코디언
@@ -218,14 +279,17 @@
     }
 
     /**************************************************
-     * 설치 확인창 호출
-     * 지원하지 않는 브라우저에서는 안내문 표시
+     * 홈 화면 설치 확인창 호출
+     *
+     * 설치 확인창을 지원하지 않는 브라우저는
+     * 설치 안내문 표시
      **************************************************/
     let deferredPrompt = null;
 
     window.addEventListener(
       "beforeinstallprompt",
       function(event) {
+
         event.preventDefault();
         deferredPrompt = event;
       }
@@ -241,7 +305,12 @@
         try {
           await promptEvent.prompt();
         } catch (error) {
-          console.warn("설치 요청 실패:", error);
+
+          console.warn(
+            "설치 요청 실패:",
+            error
+          );
+
           showInstructions();
         }
 
@@ -251,6 +320,7 @@
     }
 
     function showInstructions() {
+
       document.getElementById("instructions")
         .classList.add("show");
     }
