@@ -3,59 +3,60 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#086cc5">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
 <title>대회 참가 신청</title>
 
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#086cc5">
+
 <style>
-* { box-sizing:border-box; }
+* {
+  box-sizing:border-box;
+}
 
 body {
   margin:0;
-  padding:6px 10px;
+  padding:5px 10px;
   background:#f0f5fa;
-  font-family:Arial,sans-serif;
-  text-align:center;
+  font-family:Arial,"Malgun Gothic",sans-serif;
   color:#073b65;
 }
 
 .card {
   max-width:460px;
   margin:4px auto;
-  padding:16px 14px;
-  background:white;
-  border-radius:16px;
+  padding:15px 13px;
+  background:#fff;
+  border-radius:15px;
   box-shadow:0 3px 12px #0001;
 }
 
 h1 {
+  margin:0 0 13px;
+  text-align:center;
   font-size:25px;
-  margin:0 0 14px;
 }
 
 button {
   width:100%;
-  padding:13px 10px;
   border:0;
   border-radius:10px;
+  padding:13px 8px;
   font-size:19px;
   font-weight:bold;
   cursor:pointer;
 }
 
-.primary,.execute {
+.primary {
   background:#086cc5;
-  color:white;
-}
-
-.primary:disabled {
-  background:#538fbe;
+  color:#fff;
 }
 
 .accordion {
-  margin-top:10px;
-  background:#e9f2fa;
+  margin-top:9px;
+  background:#e7f1fa;
   color:#073b65;
 }
 
@@ -63,49 +64,82 @@ button {
   display:none;
   margin-top:8px;
   padding:12px;
-  background:#f5f8fb;
-  border:1px solid #d5e2ed;
+  border:1px solid #d4e0ed;
   border-radius:10px;
-  text-align:left;
-  font-size:16px;
-  line-height:1.4;
+  background:#f5f8fb;
 }
 
-.guide.show { display:block; }
+.guide.show {
+  display:block;
+}
 
 .guide-title {
+  text-align:center;
   font-size:19px;
   font-weight:bold;
-  text-align:center;
-  margin-bottom:8px;
-}
-
-.guide p {
-  margin:6px 0 10px;
-  line-height:1.4;
+  margin-bottom:12px;
 }
 
 .execute {
-  margin:4px 0 12px;
+  background:#086cc5;
+  color:#fff;
+  margin-bottom:12px;
 }
 
-.loading-note {
-  display:none;
-  margin-top:10px;
+.execute:disabled {
+  background:#dcefe1;
+  color:#166534;
+  cursor:default;
+}
+
+.step {
   font-size:16px;
-  color:#49667d;
+  line-height:1.45;
+  margin:9px 0;
 }
 
-.loading-note.show { display:block; }
+.step b {
+  font-size:17px;
+}
+
+.complete {
+  display:none;
+  padding:10px;
+  background:#e8f6ed;
+  color:#166534;
+  border-radius:8px;
+  text-align:center;
+  font-size:17px;
+  font-weight:bold;
+  line-height:1.5;
+  margin-bottom:10px;
+}
+
+.complete.show {
+  display:block;
+}
+
+.note {
+  font-size:15px;
+  line-height:1.45;
+  color:#526579;
+  margin-top:10px;
+}
+
+#loadingNote {
+  display:none;
+  text-align:center;
+  margin-top:8px;
+  font-size:16px;
+}
 </style>
 </head>
 
 <body>
+
 <div class="card">
 
-<h1>🏌️ 대회 참가 신청</h1>
-
-<div id="normalPage">
+  <h1>🏌️ 대회 참가 신청</h1>
 
   <button class="primary"
           id="openEventBtn"
@@ -113,17 +147,13 @@ button {
     참가 신청 화면 열기
   </button>
 
-  <div class="loading-note"
-       id="loadingNote"
-       role="status"
-       aria-live="polite">
-    잠시만 기다려 주십시오.
+  <div id="loadingNote">
+    참가 신청 화면 연결 중...
   </div>
 
   <button class="accordion"
           id="guideBtn"
           aria-expanded="false"
-          aria-controls="installGuide"
           onclick="toggleGuide()">
     홈 화면에 바로가기 추가 ▼
   </button>
@@ -134,78 +164,59 @@ button {
       📲 홈 화면 바로가기 방법
     </div>
 
-    <button class="execute"
-            id="homeShortcutBtn"
-            onclick="executeHomeShortcut()">
-      📲 홈 화면 바로가기 실행
-    </button>
+    <div class="step">
+      <b>① 브라우저에서 열기</b><br>
+      카카오톡·밴드에서는 메뉴(⋮)를 눌러
+      다른 브라우저로 열어 주십시오.
+    </div>
 
-    <p>
-      <b>① 카카오톡·밴드</b><br>
-      메뉴(⋮) → 다른 브라우저로 열기
-    </p>
-
-    <p>
-      <b>② 삼성 인터넷</b><br>
-      메뉴(☰ 또는 ⋮) →
-      홈 화면에 추가 → 추가
-    </p>
-
-    <p>
-      <b>③ 크롬</b><br>
-      메뉴(⋮) →
-      홈 화면에 추가
-    </p>
-
-    <p>
-      <b>④ 아이폰 Safari</b><br>
-      공유 버튼 →
-      홈 화면에 추가
-    </p>
-
-    <p>
-      <b>⑤ 등록 후</b><br>
-      홈 화면 아이콘을 누르면
-      참가 신청 화면으로 바로 이동합니다.
-    </p>
-
-  </div>
-</div>
-
-<!-- 기존 setup=1 주소 호환 -->
-<div id="setupPage" style="display:none;">
-
-  <div class="guide show">
-
-    <div class="guide-title">
-      📲 홈 화면 바로가기 방법
+    <div class="step">
+      <b>② 아래 버튼을 한 번 누르기</b>
     </div>
 
     <button class="execute"
-            id="prepareHomeBtn"
-            onclick="executeHomeShortcut()">
-      📲 홈 화면 바로가기 실행
+            id="prepareBtn"
+            onclick="prepareShortcut()">
+      📲 바로가기 주소 준비
     </button>
 
-    <p>
-      실행 버튼을 누른 뒤
-      브라우저 메뉴에서 홈 화면에 추가하십시오.
-    </p>
+    <div class="complete" id="completeMessage">
+      ✅ 바로가기 주소 준비 완료<br>
+      이제 아래 ③번을 진행하십시오.
+    </div>
+
+    <div class="step">
+      <b>③ 홈 화면에 추가</b><br>
+      삼성 인터넷 : 메뉴(☰) → 홈 화면에 추가<br>
+      크롬 : 메뉴(⋮) → 홈 화면에 추가<br>
+      아이폰 Safari : 공유 → 홈 화면에 추가
+    </div>
+
+    <div class="step">
+      <b>④ 설치 완료</b><br>
+      홈 화면에 만들어진 아이콘으로
+      참가 신청 화면에 접속합니다.
+    </div>
+
+    <div class="note">
+      ※ 바로가기 주소 준비 버튼은
+      아이콘을 자동 설치하는 버튼이 아닙니다.
+      설치는 브라우저 메뉴에서 완료합니다.
+    </div>
 
   </div>
-</div>
 
 </div>
 
 <script>
 /**************************************************
  * 2026.11.23
- * 대회 참가 신청 GitHub 연결
+ * 대회 참가 신청 홈 화면 바로가기
  *
- * L열 기존 URL 유지
- * 일반 접속 : 안내 화면
- * 바로가기 실행 : home=1 주소 준비
- * 홈 화면 아이콘 : 참가 신청 자동 연결
+ * - 기존 L열 URL 유지
+ * - 안내창 열기/닫기
+ * - 주소 준비 버튼 1회 실행
+ * - home=1 직접 접속 시 GS 연결
  **************************************************/
 
 const GS_BASE_URL =
@@ -213,96 +224,85 @@ const GS_BASE_URL =
   "AKfycbySUNGARDitfAqrmdNQoCO1Pb55l72CsMGznm1eay56Zd24ufCZBXfBX467NbIDa4M9" +
   "/exec";
 
-const PG_EVENT_STORAGE_KEY = "PG_LAST_EVENT_ID";
+const EVENT_KEY = "PG_LAST_EVENT_ID";
 
 /**************************************************
- * 대회ID 형식 확인
+ * 대회ID 검증
  **************************************************/
-function PG_isValidEventId_(id) {
+function validEventId(id) {
   return /^PG-\d{4}-\d{3,}$/.test(id || "");
 }
 
 /**************************************************
- * 대회ID 저장
+ * 대회ID 조회
  **************************************************/
-function PG_saveEventId_(eventId) {
-  if (!PG_isValidEventId_(eventId)) return;
+function getEventId() {
 
-  try {
-    localStorage.setItem(PG_EVENT_STORAGE_KEY,eventId);
-  } catch(error) {
-    console.warn("대회ID 저장 실패:",error);
+  const params = new URLSearchParams(location.search);
+  const queryId = params.get("eventId");
+
+  if (validEventId(queryId)) {
+    return queryId;
   }
-}
 
-/**************************************************
- * 기억된 대회ID 조회
- **************************************************/
-function PG_getSavedEventId_() {
+  const file = location.pathname.split("/").pop();
+
+  const match = file.match(
+    /^(PG-\d{4}-\d{3,})\.html$/i
+  );
+
+  if (match && validEventId(match[1])) {
+    return match[1];
+  }
+
   try {
-    const id = localStorage.getItem(PG_EVENT_STORAGE_KEY);
-    return PG_isValidEventId_(id) ? id : "";
-  } catch(error) {
+    const saved = localStorage.getItem(EVENT_KEY);
+    return validEventId(saved) ? saved : "";
+  } catch(e) {
     return "";
   }
 }
 
 /**************************************************
- * 대회ID 확인
- * - URL eventId
- * - 대회별 HTML 파일명
- * - 저장된 대회ID
+ * 대회ID 기억
  **************************************************/
-function PG_getEventId_() {
-  const params = new URLSearchParams(location.search);
-  const requestedId = params.get("eventId");
+function saveEventId(id) {
+  if (!validEventId(id)) return;
 
-  if (PG_isValidEventId_(requestedId)) {
-    return requestedId;
+  try {
+    localStorage.setItem(EVENT_KEY,id);
+  } catch(e) {
+    console.warn(e);
   }
-
-  const fileName = location.pathname.split("/").pop();
-  const match = fileName.match(
-    /^(PG-\d{4}-\d{3,})\.html$/i
-  );
-
-  if (match && PG_isValidEventId_(match[1])) {
-    return match[1];
-  }
-
-  return PG_getSavedEventId_();
 }
 
 /**************************************************
  * 참가 신청 화면 열기
  **************************************************/
 function openEvent() {
-  const btn = document.getElementById("openEventBtn");
 
-  if (btn.disabled) return;
+  const id = getEventId();
 
-  btn.disabled = true;
-  btn.textContent = "⏳ 참가 신청 화면 연결 중...";
-
-  document.getElementById("loadingNote")
-    .classList.add("show");
-
-  const params = new URLSearchParams(location.search);
-  const eventId = PG_getEventId_();
-
-  if (!eventId) {
-    btn.disabled = false;
-    btn.textContent = "참가 신청 화면 열기";
-    document.getElementById("loadingNote")
-      .textContent = "대회ID를 확인할 수 없습니다.";
+  if (!id) {
+    alert("대회ID를 확인할 수 없습니다.");
     return;
   }
 
-  const preview = params.get("preview");
-  PG_saveEventId_(eventId);
+  saveEventId(id);
+
+  const btn = document.getElementById("openEventBtn");
+  btn.disabled = true;
+  btn.textContent = "연결 중...";
+
+  document.getElementById("loadingNote")
+    .style.display = "block";
 
   const url = new URL(GS_BASE_URL);
-  url.searchParams.set("eventId",eventId);
+  url.searchParams.set("eventId",id);
+
+  const preview = new URLSearchParams(
+    location.search
+  ).get("preview");
 
   if (preview && /^\d+$/.test(preview)) {
     url.searchParams.set("preview",preview);
@@ -312,48 +312,7 @@ function openEvent() {
 }
 
 /**************************************************
- * 홈 화면 바로가기 주소 준비
- **************************************************/
-function prepareHomeShortcut() {
-  const eventId = PG_getEventId_();
-
-  if (!eventId) {
-    alert("대회ID를 확인할 수 없습니다.");
-    return false;
-  }
-
-  PG_saveEventId_(eventId);
-
-  const url = new URL(location.href);
-  url.searchParams.delete("setup");
-  url.searchParams.set("eventId",eventId);
-  url.searchParams.set("home","1");
-
-  history.replaceState(null,"",url.toString());
-
-  return true;
-}
-
-/**************************************************
- * 홈 화면 바로가기 실행
- **************************************************/
-function executeHomeShortcut() {
-
-  if (!prepareHomeShortcut()) return;
-
-  const btn = document.getElementById("homeShortcutBtn");
-  if (btn) {
-    btn.textContent = "✅ 바로가기 실행 준비 완료";
-  }
-
-  const setupBtn = document.getElementById("prepareHomeBtn");
-  if (setupBtn) {
-    setupBtn.textContent = "✅ 바로가기 실행 준비 완료";
-  }
-}
-
-/**************************************************
- * 안내창 열기 / 닫기
+ * 안내창 열기/닫기
  **************************************************/
 function toggleGuide() {
 
@@ -362,85 +321,126 @@ function toggleGuide() {
 
   const opened = guide.classList.toggle("show");
 
-  btn.setAttribute("aria-expanded",String(opened));
-
   btn.textContent = opened
     ? "홈 화면에 바로가기 추가 ▲"
     : "홈 화면에 바로가기 추가 ▼";
+
+  btn.setAttribute(
+    "aria-expanded",
+    String(opened)
+  );
 }
 
 /**************************************************
- * 최초 접속 화면 분기
+ * 바로가기 주소 준비
+ * 버튼은 한 번만 누름
  **************************************************/
-function PG_initializePage_() {
+function prepareShortcut() {
 
-  const params = new URLSearchParams(location.search);
-  const eventId = PG_getEventId_();
+  const id = getEventId();
 
-  if (PG_isValidEventId_(eventId)) {
-    PG_saveEventId_(eventId);
-  }
-
-  if (params.get("setup") === "1") {
-    document.getElementById("normalPage")
-      .style.display = "none";
-
-    document.getElementById("setupPage")
-      .style.display = "block";
-
+  if (!id) {
+    alert("대회ID를 확인할 수 없습니다.");
     return;
   }
 
-  const isHomeLink = params.get("home") === "1";
-
-  const isStandalone =
-    window.matchMedia("(display-mode: standalone)").matches ||
-    navigator.standalone === true;
-
-  if (!isHomeLink && !isStandalone) return;
-  if (!eventId) return;
+  saveEventId(id);
 
   const url = new URL(location.href);
-  url.searchParams.set("eventId",eventId);
 
-  history.replaceState(null,"",url.toString());
+  url.searchParams.set("eventId",id);
+  url.searchParams.set("home","1");
+  url.searchParams.delete("setup");
 
-  openEvent();
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener(
-    "DOMContentLoaded",PG_initializePage_
+  // 화면 이동 없이 현재 주소 변경
+  history.replaceState(
+    null,
+    "",
+    url.toString()
   );
-} else {
-  PG_initializePage_();
+
+  const btn = document.getElementById("prepareBtn");
+
+  // 준비 완료 후 버튼을 다시 누를 필요 없음
+  btn.style.display = "none";
+
+  document.getElementById("completeMessage")
+    .classList.add("show");
 }
 
 /**************************************************
- * 뒤로 돌아왔을 때 버튼 복원
+ * 최초 화면 실행
+ **************************************************/
+function initializePage() {
+
+  const params = new URLSearchParams(location.search);
+  const id = getEventId();
+
+  if (id) {
+    saveEventId(id);
+  }
+
+  // 기존 setup=1 접속도 안내창 표시
+  if (params.get("setup") === "1") {
+    toggleGuide();
+    return;
+  }
+
+  const homeMode = params.get("home") === "1";
+
+  const standalone =
+    window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches ||
+    navigator.standalone === true;
+
+  // 일반 URL 접속은 안내 화면 표시
+  if (!homeMode && !standalone) {
+    return;
+  }
+
+  // 홈 화면 바로가기 접속은 자동 연결
+  if (id) {
+    openEvent();
+  }
+}
+
+/**************************************************
+ * 뒤로 돌아왔을 때 버튼 복구
  **************************************************/
 window.addEventListener("pageshow",function() {
 
   const btn = document.getElementById("openEventBtn");
+
   btn.disabled = false;
   btn.textContent = "참가 신청 화면 열기";
 
   document.getElementById("loadingNote")
-    .classList.remove("show");
+    .style.display = "none";
 });
 
 /**************************************************
- * PWA 서비스 워커 등록
+ * 화면 시작
+ **************************************************/
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializePage
+  );
+} else {
+  initializePage();
+}
+
+/**************************************************
+ * 서비스 워커 등록
  **************************************************/
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js")
-    .then(function() {
-      console.log("PWA 서비스 워커 등록 완료");
-    })
     .catch(function(error) {
-      console.error("PWA 등록 실패:",error);
+      console.warn("서비스 워커:",error);
     });
 }
 </script>
+
 </body>
 </html>
