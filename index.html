@@ -78,10 +78,11 @@ button {
   color:#fff;
 }
 
+/* 실행 완료 안내 - 겨자색 */
 .complete {
   padding:11px 8px;
-  background:#D4A017;  /* 겨자색 바탕 */
-  color:#111111;       /* 검정색 글씨 */
+  background:#D4A017;
+  color:#111111;
   border-radius:9px;
   text-align:center;
   font-size:19px;
@@ -135,7 +136,7 @@ button {
     참가 신청 화면 연결 중...
   </div>
 
-  <!-- 홈 화면 바로가기 안내 열기 -->
+  <!-- 바로가기 안내 -->
   <button class="accordion"
           id="guideBtn"
           aria-expanded="false"
@@ -144,17 +145,16 @@ button {
     홈 화면에 바로가기 추가 ▼
   </button>
 
-  <!-- 바로가기 안내 영역 -->
   <div class="guide" id="installGuide">
 
-    <!-- 최초에는 이 버튼만 표시 -->
+    <!-- 최초에는 실행 버튼만 표시 -->
     <button class="execute"
             id="prepareBtn"
             onclick="prepareShortcut()">
       📲 홈 화면 바로가기 실행
     </button>
 
-    <!-- 실행 버튼을 누른 후 표시 -->
+    <!-- 실행 후 표시 -->
     <div id="completeArea">
 
       <div class="complete">
@@ -172,8 +172,7 @@ button {
 
       <div class="step">
         <b>② 삼성 인터넷</b><br>
-        메뉴(☰ 또는 ⋮) →
-        홈 화면에 추가 → 추가
+        메뉴(☰ 또는 ⋮) → 홈 화면에 추가 → 추가
       </div>
 
       <div class="step">
@@ -203,11 +202,10 @@ button {
  * 2026.11.23
  * 대회 참가 신청 / 홈 화면 바로가기
  *
- * 1. 기존 L열 URL 유지
- * 2. 안내창 열기/닫기
- * 3. 실행 버튼 1회
- * 4. 실행 후 설치 방법 표시
- * 5. home=1 접속 시 GS 자동 연결
+ * - 기존 L열 URL 유지
+ * - 실행 버튼 1회
+ * - 실행 후 안내문 표시
+ * - 기존 설명 순서 복원
  **************************************************/
 
 const GS_BASE_URL =
@@ -326,9 +324,6 @@ function toggleGuide() {
 
 /**************************************************
  * 홈 화면 바로가기 실행
- * - 버튼 한 번만 실행
- * - 실행 후 버튼 숨김
- * - 완료 안내 및 설치 방법 표시
  **************************************************/
 function prepareShortcut() {
 
@@ -347,7 +342,6 @@ function prepareShortcut() {
   url.searchParams.set("home","1");
   url.searchParams.delete("setup");
 
-  // 현재 화면은 유지하고 주소만 변경
   history.replaceState(
     null,
     "",
@@ -358,7 +352,7 @@ function prepareShortcut() {
   document.getElementById("prepareBtn")
     .style.display = "none";
 
-  // 완료 안내와 설치 방법 표시
+  // 완료 안내와 설명문 표시
   document.getElementById("completeArea")
     .style.display = "block";
 }
@@ -375,7 +369,6 @@ function initializePage() {
     saveEventId(id);
   }
 
-  // 기존 setup=1 주소 호환
   if (params.get("setup") === "1") {
     toggleGuide();
     return;
@@ -389,12 +382,10 @@ function initializePage() {
     ).matches ||
     navigator.standalone === true;
 
-  // 일반 접속은 안내 화면
   if (!homeMode && !standalone) {
     return;
   }
 
-  // 홈 화면 아이콘으로 접속하면 자동 연결
   if (id) {
     openEvent();
   }
