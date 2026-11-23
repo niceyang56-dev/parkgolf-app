@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1">
+      content="width=device-width, initial-scale=1">
 
 <title>대회 참가 신청</title>
 
@@ -73,23 +73,26 @@ button {
   display:block;
 }
 
-.guide-title {
-  text-align:center;
-  font-size:19px;
-  font-weight:bold;
-  margin-bottom:12px;
-}
-
 .execute {
   background:#086cc5;
   color:#fff;
-  margin-bottom:12px;
 }
 
-.execute:disabled {
-  background:#dcefe1;
+.complete {
+  padding:11px 8px;
+  background:#e7f5eb;
   color:#166534;
-  cursor:default;
+  border-radius:9px;
+  text-align:center;
+  font-size:19px;
+  font-weight:bold;
+}
+
+.guide-title {
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+  margin:14px 0 10px;
 }
 
 .step {
@@ -102,34 +105,14 @@ button {
   font-size:17px;
 }
 
-.complete {
+#completeArea {
   display:none;
-  padding:10px;
-  background:#e8f6ed;
-  color:#166534;
-  border-radius:8px;
-  text-align:center;
-  font-size:17px;
-  font-weight:bold;
-  line-height:1.5;
-  margin-bottom:10px;
-}
-
-.complete.show {
-  display:block;
-}
-
-.note {
-  font-size:15px;
-  line-height:1.45;
-  color:#526579;
-  margin-top:10px;
 }
 
 #loadingNote {
   display:none;
-  text-align:center;
   margin-top:8px;
+  text-align:center;
   font-size:16px;
 }
 </style>
@@ -141,6 +124,7 @@ button {
 
   <h1>🏌️ 대회 참가 신청</h1>
 
+  <!-- 참가 신청 -->
   <button class="primary"
           id="openEventBtn"
           onclick="openEvent()">
@@ -151,57 +135,63 @@ button {
     참가 신청 화면 연결 중...
   </div>
 
+  <!-- 홈 화면 바로가기 안내 열기 -->
   <button class="accordion"
           id="guideBtn"
           aria-expanded="false"
+          aria-controls="installGuide"
           onclick="toggleGuide()">
     홈 화면에 바로가기 추가 ▼
   </button>
 
+  <!-- 바로가기 안내 영역 -->
   <div class="guide" id="installGuide">
 
-    <div class="guide-title">
-      📲 홈 화면 바로가기 방법
-    </div>
-
-    <div class="step">
-      <b>① 브라우저에서 열기</b><br>
-      카카오톡·밴드에서는 메뉴(⋮)를 눌러
-      다른 브라우저로 열어 주십시오.
-    </div>
-
-    <div class="step">
-      <b>② 아래 버튼을 한 번 누르기</b>
-    </div>
-
+    <!-- 최초에는 이 버튼만 표시 -->
     <button class="execute"
             id="prepareBtn"
             onclick="prepareShortcut()">
-      📲 바로가기 주소 준비
+      📲 홈 화면 바로가기 실행
     </button>
 
-    <div class="complete" id="completeMessage">
-      ✅ 바로가기 주소 준비 완료<br>
-      이제 아래 ③번을 진행하십시오.
-    </div>
+    <!-- 실행 버튼을 누른 후 표시 -->
+    <div id="completeArea">
 
-    <div class="step">
-      <b>③ 홈 화면에 추가</b><br>
-      삼성 인터넷 : 메뉴(☰) → 홈 화면에 추가<br>
-      크롬 : 메뉴(⋮) → 홈 화면에 추가<br>
-      아이폰 Safari : 공유 → 홈 화면에 추가
-    </div>
+      <div class="complete">
+        ✅ 바로가기 실행 준비 완료
+      </div>
 
-    <div class="step">
-      <b>④ 설치 완료</b><br>
-      홈 화면에 만들어진 아이콘으로
-      참가 신청 화면에 접속합니다.
-    </div>
+      <div class="guide-title">
+        아래와 같은 순서로 진행하세요.
+      </div>
 
-    <div class="note">
-      ※ 바로가기 주소 준비 버튼은
-      아이콘을 자동 설치하는 버튼이 아닙니다.
-      설치는 브라우저 메뉴에서 완료합니다.
+      <div class="step">
+        <b>① 카카오톡·밴드</b><br>
+        메뉴(⋮) → 다른 브라우저로 열기
+      </div>
+
+      <div class="step">
+        <b>② 삼성 인터넷</b><br>
+        메뉴(☰ 또는 ⋮) →
+        홈 화면에 추가 → 추가
+      </div>
+
+      <div class="step">
+        <b>③ 크롬</b><br>
+        메뉴(⋮) → 홈 화면에 추가
+      </div>
+
+      <div class="step">
+        <b>④ 아이폰 Safari</b><br>
+        공유 버튼 → 홈 화면에 추가
+      </div>
+
+      <div class="step">
+        <b>⑤ 등록 후</b><br>
+        홈 화면 아이콘을 누르면
+        참가 신청 화면으로 바로 이동합니다.
+      </div>
+
     </div>
 
   </div>
@@ -211,12 +201,13 @@ button {
 <script>
 /**************************************************
  * 2026.11.23
- * 대회 참가 신청 홈 화면 바로가기
+ * 대회 참가 신청 / 홈 화면 바로가기
  *
- * - 기존 L열 URL 유지
- * - 안내창 열기/닫기
- * - 주소 준비 버튼 1회 실행
- * - home=1 직접 접속 시 GS 연결
+ * 1. 기존 L열 URL 유지
+ * 2. 안내창 열기/닫기
+ * 3. 실행 버튼 1회
+ * 4. 실행 후 설치 방법 표시
+ * 5. home=1 접속 시 GS 자동 연결
  **************************************************/
 
 const GS_BASE_URL =
@@ -227,7 +218,7 @@ const GS_BASE_URL =
 const EVENT_KEY = "PG_LAST_EVENT_ID";
 
 /**************************************************
- * 대회ID 검증
+ * 대회ID 형식 검증
  **************************************************/
 function validEventId(id) {
   return /^PG-\d{4}-\d{3,}$/.test(id || "");
@@ -264,9 +255,10 @@ function getEventId() {
 }
 
 /**************************************************
- * 대회ID 기억
+ * 대회ID 저장
  **************************************************/
 function saveEventId(id) {
+
   if (!validEventId(id)) return;
 
   try {
@@ -291,6 +283,7 @@ function openEvent() {
   saveEventId(id);
 
   const btn = document.getElementById("openEventBtn");
+
   btn.disabled = true;
   btn.textContent = "연결 중...";
 
@@ -312,7 +305,7 @@ function openEvent() {
 }
 
 /**************************************************
- * 안내창 열기/닫기
+ * 안내창 열기 / 닫기
  **************************************************/
 function toggleGuide() {
 
@@ -332,8 +325,10 @@ function toggleGuide() {
 }
 
 /**************************************************
- * 바로가기 주소 준비
- * 버튼은 한 번만 누름
+ * 홈 화면 바로가기 실행
+ * - 버튼 한 번만 실행
+ * - 실행 후 버튼 숨김
+ * - 완료 안내 및 설치 방법 표시
  **************************************************/
 function prepareShortcut() {
 
@@ -352,24 +347,24 @@ function prepareShortcut() {
   url.searchParams.set("home","1");
   url.searchParams.delete("setup");
 
-  // 화면 이동 없이 현재 주소 변경
+  // 현재 화면은 유지하고 주소만 변경
   history.replaceState(
     null,
     "",
     url.toString()
   );
 
-  const btn = document.getElementById("prepareBtn");
+  // 실행 버튼 숨김
+  document.getElementById("prepareBtn")
+    .style.display = "none";
 
-  // 준비 완료 후 버튼을 다시 누를 필요 없음
-  btn.style.display = "none";
-
-  document.getElementById("completeMessage")
-    .classList.add("show");
+  // 완료 안내와 설치 방법 표시
+  document.getElementById("completeArea")
+    .style.display = "block";
 }
 
 /**************************************************
- * 최초 화면 실행
+ * 최초 접속 처리
  **************************************************/
 function initializePage() {
 
@@ -380,7 +375,7 @@ function initializePage() {
     saveEventId(id);
   }
 
-  // 기존 setup=1 접속도 안내창 표시
+  // 기존 setup=1 주소 호환
   if (params.get("setup") === "1") {
     toggleGuide();
     return;
@@ -394,12 +389,12 @@ function initializePage() {
     ).matches ||
     navigator.standalone === true;
 
-  // 일반 URL 접속은 안내 화면 표시
+  // 일반 접속은 안내 화면
   if (!homeMode && !standalone) {
     return;
   }
 
-  // 홈 화면 바로가기 접속은 자동 연결
+  // 홈 화면 아이콘으로 접속하면 자동 연결
   if (id) {
     openEvent();
   }
