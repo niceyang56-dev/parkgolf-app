@@ -3,15 +3,22 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#086cc5">
+
   <title>대회 참가 신청</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      padding: 24px 16px;
+      padding: 6px 10px;
       background: #f0f5fa;
       font-family: Arial, sans-serif;
       text-align: center;
@@ -20,8 +27,8 @@
 
     .card {
       max-width: 460px;
-      margin: 30px auto;
-      padding: 24px 16px;
+      margin: 4px auto;
+      padding: 16px 14px;
       background: white;
       border-radius: 16px;
       box-shadow: 0 3px 12px #0001;
@@ -29,12 +36,12 @@
 
     h1 {
       font-size: 25px;
-      margin: 0 0 20px;
+      margin: 0 0 14px;
     }
 
     button {
       width: 100%;
-      padding: 16px 12px;
+      padding: 13px 10px;
       border: 0;
       border-radius: 10px;
       font-size: 19px;
@@ -42,31 +49,32 @@
       cursor: pointer;
     }
 
-    .primary, .install, .done {
+    .primary {
       background: #086cc5;
       color: white;
     }
 
     .primary:disabled {
       background: #538fbe;
+      cursor: wait;
     }
 
     .accordion {
-      margin-top: 14px;
+      margin-top: 10px;
       background: #e9f2fa;
       color: #073b65;
     }
 
     .guide {
       display: none;
-      margin-top: 12px;
-      padding: 15px;
+      margin-top: 8px;
+      padding: 12px;
       background: #f5f8fb;
       border: 1px solid #d5e2ed;
       border-radius: 10px;
       text-align: left;
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.4;
     }
 
     .guide.show {
@@ -77,24 +85,17 @@
       font-size: 19px;
       font-weight: bold;
       text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .guide p {
-      margin: 10px 0;
-    }
-
-    .install {
-      margin-bottom: 12px;
-    }
-
-    .done {
-      margin-top: 12px;
+      margin: 6px 0 10px;
+      line-height: 1.4;
     }
 
     .loading-note {
       display: none;
-      margin-top: 12px;
+      margin-top: 10px;
       font-size: 16px;
       color: #49667d;
     }
@@ -102,64 +103,6 @@
     .loading-note.show {
       display: block;
     }
-
-    
-/**************************************************
- * 2026.11.23
- * 모바일 화면 여백 및 행 간격 축소
- **************************************************/
-
-/* 화면 상단 빈 공간 제거 */
-body {
-  padding: 6px 10px !important;
-}
-
-/* 흰색 전체 카드 여백 축소 */
-.card {
-  margin: 4px auto !important;
-  padding: 16px 14px !important;
-}
-
-/* 제목 아래 간격 축소 */
-h1 {
-  margin: 0 0 14px !important;
-}
-
-/* 버튼 높이 및 간격 축소 */
-button {
-  padding: 13px 10px !important;
-}
-
-.accordion {
-  margin-top: 10px !important;
-}
-
-/* 안내창 내부 여백 축소 */
-.guide {
-  margin-top: 8px !important;
-  padding: 12px !important;
-  line-height: 1.4 !important;
-}
-
-/* 안내 제목 간격 축소 */
-.guide-title {
-  margin-bottom: 8px !important;
-}
-
-/* 각 브라우저 안내문 행 간격 축소 */
-.guide p {
-  margin: 6px 0 10px !important;
-  line-height: 1.4 !important;
-}
-
-/* 하단 완료 버튼 간격 축소 */
-.done {
-  margin-top: 8px !important;
-}
-
-
-
-    
   </style>
 </head>
 
@@ -169,6 +112,7 @@ button {
 
     <h1>🏌️ 대회 참가 신청</h1>
 
+    <!-- 일반 공유 URL 화면 -->
     <div id="normalPage">
 
       <button
@@ -201,7 +145,6 @@ button {
           📲 홈 화면 바로가기 방법
         </div>
 
-
         <p>
           <b>① 카카오톡·밴드</b><br>
           메뉴(⋮) → 다른 브라우저로 열기
@@ -225,18 +168,25 @@ button {
           홈 화면에 추가
         </p>
 
-        <button
-          class="done"
-          id="doneBtn"
-          onclick="finishHomeShortcut()">
-          ✅ 홈 화면 등록 완료
-        </button>
+        <p>
+          <b>⑤ 등록 후</b><br>
+          홈 화면 아이콘을 누르면
+          참가 신청 화면으로 바로 이동합니다.
+        </p>
 
       </div>
+
     </div>
 
     <!-- 기존 setup=1 주소 호환 -->
     <div id="setupPage" style="display:none;">
+
+      <button
+        class="accordion"
+        id="setupGuideBtn"
+        onclick="prepareHomeShortcut()">
+        홈 화면에 바로가기 추가 ▼
+      </button>
 
       <div class="guide show">
 
@@ -244,19 +194,13 @@ button {
           📲 홈 화면 바로가기 방법
         </div>
 
-        <button
-          class="install"
-          id="prepareHomeBtn"
-          onclick="prepareHomeShortcut()">
-          홈 화면 바로가기 준비
-        </button>
-
         <p>
           브라우저 메뉴에서
           홈 화면에 추가하십시오.
         </p>
 
       </div>
+
     </div>
 
   </div>
@@ -267,10 +211,11 @@ button {
      * 2026.11.23
      * 대회 참가 신청 GitHub 연결
      *
-     * L열 기존 URL 유지
-     * 일반 접속 : 안내 화면
-     * 바로가기 준비 : home=1 설정
-     * 홈 화면 실행 : 참가 신청 자동 연결
+     * 일반 공유 URL : 안내 화면
+     * 바로가기 버튼 : 주소 준비 + 안내 표시
+     * 홈 화면 아이콘 : 참가 신청 자동 연결
+     *
+     * J열 / L열 URL 변경 없음
      **************************************************/
 
     const GS_BASE_URL =
@@ -281,12 +226,16 @@ button {
     const PG_EVENT_STORAGE_KEY =
       "PG_LAST_EVENT_ID";
 
-    let homeShortcutReady = false;
-
+    /**************************************************
+     * 대회ID 형식 확인
+     **************************************************/
     function PG_isValidEventId_(id) {
       return /^PG-\d{4}-\d{3,}$/.test(id || "");
     }
 
+    /**************************************************
+     * 대회ID 저장
+     **************************************************/
     function PG_saveEventId_(eventId) {
 
       if (!PG_isValidEventId_(eventId)) return;
@@ -301,6 +250,9 @@ button {
       }
     }
 
+    /**************************************************
+     * 기억된 대회ID 조회
+     **************************************************/
     function PG_getSavedEventId_() {
 
       try {
@@ -315,6 +267,13 @@ button {
       }
     }
 
+    /**************************************************
+     * 대회ID 확인
+     *
+     * URL의 eventId 우선
+     * 대회별 HTML 파일명 확인
+     * 저장된 대회ID 확인
+     **************************************************/
     function PG_getEventId_() {
 
       const params =
@@ -350,7 +309,6 @@ button {
       if (btn.disabled) return;
 
       btn.disabled = true;
-
       btn.textContent =
         "⏳ 참가 신청 화면 연결 중...";
 
@@ -379,7 +337,10 @@ button {
     }
 
     /**************************************************
-     * 홈 화면 바로가기 준비
+     * 홈 화면 바로가기 주소 준비
+     *
+     * 현재 페이지에 home=1 설정
+     * 실제 화면 이동은 하지 않음
      **************************************************/
     function prepareHomeShortcut() {
 
@@ -395,54 +356,17 @@ button {
       url.searchParams.set("home", "1");
 
       window.history.replaceState(
-        null, "", url.toString()
+        null,
+        "",
+        url.toString()
       );
-
-      homeShortcutReady = true;
-
-      const btn =
-        document.getElementById("installBtn");
-
-      if (btn) {
-        btn.textContent = "✅ 바로가기 준비 완료";
-      }
-
-      const setupBtn =
-        document.getElementById("prepareHomeBtn");
-
-      if (setupBtn) {
-        setupBtn.textContent = "✅ 바로가기 준비 완료";
-      }
     }
 
-    
-/**************************************************
- * 2026.11.23
- * 홈 화면 등록 완료
- * - 바로가기 주소 자동 준비
- * - 안내창 닫기
- **************************************************/
-function finishHomeShortcut() {
-
-  // 홈 화면 자동 진입 주소 준비
-  prepareHomeShortcut();
-
-  // 안내창 닫기
-  const guide =
-    document.getElementById("installGuide");
-
-  guide.classList.remove("show");
-
-  // 상단 버튼 원래 상태로 복원
-  const btn =
-    document.getElementById("guideBtn");
-
-  btn.textContent = "홈 화면에 바로가기 추가 ▼";
-  btn.setAttribute("aria-expanded", "false");
-}
-
     /**************************************************
-     * 안내창 열기 / 닫기
+     * 홈 화면 안내 열기 / 닫기
+     *
+     * 열 때 자동으로 바로가기 주소 준비
+     * 별도 준비 / 완료 버튼 없음
      **************************************************/
     function toggleGuide() {
 
@@ -453,16 +377,35 @@ function finishHomeShortcut() {
         document.getElementById("guideBtn");
 
       const opened =
-        guide.classList.toggle("show");
+        guide.classList.contains("show");
+
+      if (opened) {
+
+        guide.classList.remove("show");
+
+        btn.textContent =
+          "홈 화면에 바로가기 추가 ▼";
+
+        btn.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+        return;
+      }
+
+      // 안내창을 열 때 주소 자동 준비
+      prepareHomeShortcut();
+
+      guide.classList.add("show");
+
+      btn.textContent =
+        "홈 화면에 바로가기 추가 ▲";
 
       btn.setAttribute(
         "aria-expanded",
-        String(opened)
+        "true"
       );
-
-      btn.textContent = opened
-        ? "홈 화면에 바로가기 추가 ▲"
-        : "홈 화면에 바로가기 추가 ▼";
     }
 
     /**************************************************
@@ -479,6 +422,7 @@ function finishHomeShortcut() {
         PG_saveEventId_(eventId);
       }
 
+      // 기존 등록 전용 URL 호환
       if (params.get("setup") === "1") {
 
         document.getElementById("normalPage")
@@ -499,24 +443,34 @@ function finishHomeShortcut() {
         ).matches ||
         window.navigator.standalone === true;
 
+      // 일반 공유 URL은 안내 화면 유지
       if (!isHomeLink && !isStandalone) return;
+
       if (!eventId) return;
 
       const url = new URL(window.location.href);
+
       url.searchParams.set("eventId", eventId);
 
       window.history.replaceState(
-        null, "", url.toString()
+        null,
+        "",
+        url.toString()
       );
 
       openEvent();
     }
 
+    /**************************************************
+     * 화면 준비 후 실행
+     **************************************************/
     if (document.readyState === "loading") {
+
       document.addEventListener(
         "DOMContentLoaded",
         PG_initializePage_
       );
+
     } else {
       PG_initializePage_();
     }
@@ -530,7 +484,9 @@ function finishHomeShortcut() {
         document.getElementById("openEventBtn");
 
       btn.disabled = false;
-      btn.textContent = "참가 신청 화면 열기";
+
+      btn.textContent =
+        "참가 신청 화면 열기";
 
       document.getElementById("loadingNote")
         .classList.remove("show");
@@ -545,11 +501,16 @@ function finishHomeShortcut() {
         .register("./sw.js")
 
         .then(function() {
-          console.log("PWA 서비스 워커 등록 완료");
+          console.log(
+            "PWA 서비스 워커 등록 완료"
+          );
         })
 
         .catch(function(error) {
-          console.error("PWA 등록 실패:", error);
+          console.error(
+            "PWA 등록 실패:",
+            error
+          );
         });
     }
 
