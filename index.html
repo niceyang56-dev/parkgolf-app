@@ -1,432 +1,51 @@
 
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1">
-
-<title>대회 참가 신청</title>
-
-<link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#086cc5">
-
-<style>
-* {
-  box-sizing:border-box;
-}
-
-body {
-  margin:0;
-  padding:5px 10px;
-  background:#f0f5fa;
-  font-family:Arial,"Malgun Gothic",sans-serif;
-  color:#073b65;
-}
-
-.card {
-  max-width:460px;
-  margin:4px auto;
-  padding:15px 13px;
-  background:#fff;
-  border-radius:15px;
-  box-shadow:0 3px 12px #0001;
-}
-
-h1 {
-  margin:0 0 13px;
-  text-align:center;
-  font-size:25px;
-}
-
-button {
-  width:100%;
-  border:0;
-  border-radius:10px;
-  padding:13px 8px;
-  font-size:19px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.primary {
-  background:#086cc5;
-  color:#fff;
-}
-
-.accordion {
-  margin-top:9px;
-  background:#e7f1fa;
-  color:#073b65;
-}
-
-.guide {
-  display:none;
-  margin-top:8px;
-  padding:12px;
-  border:1px solid #d4e0ed;
-  border-radius:10px;
-  background:#f5f8fb;
-}
-
-.guide.show {
-  display:block;
-}
-
-.execute {
-  background:#086cc5;
-  color:#fff;
-}
-
-/* 실행 완료 안내 - 겨자색 */
-.complete {
-  padding:11px 8px;
-  background:#D4A017;
-  color:#111111;
-  border-radius:9px;
-  text-align:center;
-  font-size:19px;
-  font-weight:800;
-}
-
-.guide-title {
-  text-align:center;
-  font-size:18px;
-  font-weight:bold;
-  margin:14px 0 10px;
-}
-
-.step {
-  font-size:16px;
-  line-height:1.45;
-  margin:9px 0;
-}
-
-.step b {
-  font-size:17px;
-}
-
-#completeArea {
-  display:none;
-}
-
-#loadingNote {
-  display:none;
-  margin-top:8px;
-  text-align:center;
-  font-size:16px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-
-  <h1>🏌️ 대회 참가 신청</h1>
-
-  <!-- 참가 신청 -->
-  <button class="primary"
-          id="openEventBtn"
-          onclick="openEvent()">
-    참가 신청 화면 열기
-  </button>
-
-  <div id="loadingNote">
-    참가 신청 화면 연결 중...
-  </div>
-
-  <!-- 바로가기 안내 -->
-  <button class="accordion"
-          id="guideBtn"
-          aria-expanded="false"
-          aria-controls="installGuide"
-          onclick="toggleGuide()">
-    홈 화면에 바로가기 추가 ▼
-  </button>
-
-  <div class="guide" id="installGuide">
-
-    <!-- 최초에는 실행 버튼만 표시 -->
-    <button class="execute"
-            id="prepareBtn"
-            onclick="prepareShortcut()">
-      📲 홈 화면 바로가기 실행
-    </button>
-
-    <!-- 실행 후 표시 -->
-    <div id="completeArea">
-
-      <div class="complete">
-        ✅ 바로가기 실행 준비 완료
-      </div>
-
-      <div class="guide-title">
-        아래와 같은 순서로 진행하세요.
-      </div>
-
-      <div class="step">
-        <b>① 카카오톡·밴드</b><br>
-        메뉴(⋮) → 다른 브라우저로 열기
-      </div>
-
-      <div class="step">
-        <b>② 삼성 인터넷</b><br>
-        메뉴(☰ 또는 ⋮) → 홈 화면에 추가 → 추가
-      </div>
-
-      <div class="step">
-        <b>③ 크롬</b><br>
-        메뉴(⋮) → 홈 화면에 추가
-      </div>
-
-      <div class="step">
-        <b>④ 아이폰 Safari</b><br>
-        공유 버튼 → 홈 화면에 추가
-      </div>
-
-      <div class="step">
-        <b>⑤ 등록 후</b><br>
-        홈 화면 아이콘을 누르면
-        참가 신청 화면으로 바로 이동합니다.
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<script>
 /**************************************************
- * 2026.11.23
- * 대회 참가 신청 / 홈 화면 바로가기
- *
- * - 기존 L열 URL 유지
- * - 실행 버튼 1회
- * - 실행 후 안내문 표시
- * - 기존 설명 순서 복원
+ * 파크골프 참가 신청 PWA
+ * Service Worker
+ * 2026.11.23 개선
  **************************************************/
 
-const GS_BASE_URL =
-  "https://script.google.com/macros/s/" +
-  "AKfycbySUNGARDitfAqrmdNQoCO1Pb55l72CsMGznm1eay56Zd24ufCZBXfBX467NbIDa4M9" +
-  "/exec";
+const CACHE_NAME = "parkgolf-pwa-v2";
 
-const EVENT_KEY = "PG_LAST_EVENT_ID";
-
-/**************************************************
- * 대회ID 형식 검증
- **************************************************/
-function validEventId(id) {
-  return /^PG-\d{4}-\d{3,}$/.test(id || "");
-}
+const APP_FILES = [
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./parkgolf-192.png",
+  "./parkgolf-512.png"
+];
 
 /**************************************************
- * 대회ID 조회
+ * 설치
  **************************************************/
-function getEventId() {
+self.addEventListener("install",event => {
 
-  const params = new URLSearchParams(location.search);
-  const queryId = params.get("eventId");
-
-  if (validEventId(queryId)) {
-    return queryId;
-  }
-
-  const file = location.pathname.split("/").pop();
-
-  const match = file.match(
-    /^(PG-\d{4}-\d{3,})\.html$/i
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_FILES))
   );
 
-  if (match && validEventId(match[1])) {
-    return match[1];
-  }
-
-  try {
-    const saved = localStorage.getItem(EVENT_KEY);
-    return validEventId(saved) ? saved : "";
-  } catch(e) {
-    return "";
-  }
-}
-
-/**************************************************
- * 대회ID 저장
- **************************************************/
-function saveEventId(id) {
-
-  if (!validEventId(id)) return;
-
-  try {
-    localStorage.setItem(EVENT_KEY,id);
-  } catch(e) {
-    console.warn(e);
-  }
-}
-
-/**************************************************
- * 참가 신청 화면 열기
- **************************************************/
-function openEvent() {
-
-  const id = getEventId();
-
-  if (!id) {
-    alert("대회ID를 확인할 수 없습니다.");
-    return;
-  }
-
-  saveEventId(id);
-
-  const btn = document.getElementById("openEventBtn");
-
-  btn.disabled = true;
-  btn.textContent = "연결 중...";
-
-  document.getElementById("loadingNote")
-    .style.display = "block";
-
-  const url = new URL(GS_BASE_URL);
-  url.searchParams.set("eventId",id);
-
-  const preview = new URLSearchParams(
-    location.search
-  ).get("preview");
-
-  if (preview && /^\d+$/.test(preview)) {
-    url.searchParams.set("preview",preview);
-  }
-
-  location.href = url.toString();
-}
-
-/**************************************************
- * 안내창 열기 / 닫기
- **************************************************/
-function toggleGuide() {
-
-  const guide = document.getElementById("installGuide");
-  const btn = document.getElementById("guideBtn");
-
-  const opened = guide.classList.toggle("show");
-
-  btn.textContent = opened
-    ? "홈 화면에 바로가기 추가 ▲"
-    : "홈 화면에 바로가기 추가 ▼";
-
-  btn.setAttribute(
-    "aria-expanded",
-    String(opened)
-  );
-}
-
-/**************************************************
- * 홈 화면 바로가기 실행
- **************************************************/
-function prepareShortcut() {
-
-  const id = getEventId();
-
-  if (!id) {
-    alert("대회ID를 확인할 수 없습니다.");
-    return;
-  }
-
-  saveEventId(id);
-
-  const url = new URL(location.href);
-
-  url.searchParams.set("eventId",id);
-  url.searchParams.set("home","1");
-  url.searchParams.delete("setup");
-
-  history.replaceState(
-    null,
-    "",
-    url.toString()
-  );
-
-  // 실행 버튼 숨김
-  document.getElementById("prepareBtn")
-    .style.display = "none";
-
-  // 완료 안내와 설명문 표시
-  document.getElementById("completeArea")
-    .style.display = "block";
-}
-
-/**************************************************
- * 최초 접속 처리
- **************************************************/
-function initializePage() {
-
-  const params = new URLSearchParams(location.search);
-  const id = getEventId();
-
-  if (id) {
-    saveEventId(id);
-  }
-
-  if (params.get("setup") === "1") {
-    toggleGuide();
-    return;
-  }
-
-  const homeMode = params.get("home") === "1";
-
-  const standalone =
-    window.matchMedia(
-      "(display-mode: standalone)"
-    ).matches ||
-    navigator.standalone === true;
-
-  if (!homeMode && !standalone) {
-    return;
-  }
-
-  if (id) {
-    openEvent();
-  }
-}
-
-/**************************************************
- * 뒤로 돌아왔을 때 버튼 복구
- **************************************************/
-window.addEventListener("pageshow",function() {
-
-  const btn = document.getElementById("openEventBtn");
-
-  btn.disabled = false;
-  btn.textContent = "참가 신청 화면 열기";
-
-  document.getElementById("loadingNote")
-    .style.display = "none";
+  self.skipWaiting();
 });
 
 /**************************************************
- * 화면 시작
+ * 활성화
+ * 이전 버전 캐시 정리
  **************************************************/
-if (document.readyState === "loading") {
-  document.addEventListener(
-    "DOMContentLoaded",
-    initializePage
+self.addEventListener("activate",event => {
+
+  event.waitUntil(
+    caches.keys().then(keys => {
+
+      return Promise.all(
+        keys
+          .filter(key =>
+            key.startsWith("parkgolf-pwa-") &&
+            key !== CACHE_NAME
+          )
+          .map(key => caches.delete(key))
+      );
+
+    }).then(() => self.clients.claim())
   );
-} else {
-  initializePage();
-}
-
-/**************************************************
- * 서비스 워커 등록
- **************************************************/
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js")
-    .catch(function(error) {
-      console.warn("서비스 워커:",error);
-    });
-}
-</script>
-
-</body>
-</html>
+});
