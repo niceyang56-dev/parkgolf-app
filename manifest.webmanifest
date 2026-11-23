@@ -1,0 +1,27 @@
+
+{
+  "id": "/parkgolf-app/",
+  "name": "파크골프 참가 신청",
+  "short_name": "파크골프 신청",
+  "description": "파크골프 대회 참가 신청 공통 웹앱",
+  "start_url": "/parkgolf-app/",
+  "scope": "/parkgolf-app/",
+  "display": "standalone",
+  "background_color": "#f0f5fa",
+  "theme_color": "#086cc5",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
