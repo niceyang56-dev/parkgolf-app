@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -149,47 +148,57 @@
 
       <div class="guide" id="installGuide">
 
-        <button class="install" onclick="installApp()">
-          📲 홈 화면에 설치하기
+        <button
+          class="install"
+          id="installBtn"
+          onclick="installApp()">
+          📲 홈 화면 바로가기 준비
         </button>
 
         <div class="instructions" id="instructions">
 
           <p>
-            <b>① 카카오톡에서 접속한 경우</b><br>
-            화면의 점 3개(⋮) →
+            <b>① 카카오톡·밴드에서 접속한 경우</b><br>
+            메뉴(⋮) →
             다른 브라우저로 열기
           </p>
 
           <p>
-            <b>② 삼성 인터넷에서 홈 화면에 추가</b><br>
-            하단 점 3개(⋮) →
-            현재 페이지 추가 →
-            홈 화면 → 추가
+            <b>② 삼성 인터넷</b><br>
+            홈 화면 바로가기 준비 버튼을 누른 후<br>
+            메뉴(☰ 또는 ⋮) →
+            홈 화면에 추가 → 추가
           </p>
 
           <p>
-            <b>③ 크롬에서 홈 화면에 추가</b><br>
+            <b>③ 크롬</b><br>
             메뉴(⋮) →
-            홈 화면에 추가 또는 앱 설치
+            홈 화면에 추가
           </p>
 
           <p>
-            <b>④ 아이폰 Safari에서 홈 화면에 추가</b><br>
+            <b>④ 아이폰 Safari</b><br>
             공유 버튼 →
             홈 화면에 추가
           </p>
 
+          <p>
+            <b>⑤ 등록 완료 후</b><br>
+            홈 화면 아이콘을 누르면
+            참가 신청 화면으로 바로 이동합니다.
+          </p>
+
         </div>
+
       </div>
     </div>
 
-    <!-- 홈 화면 바로가기 등록 전용 화면 -->
+    <!-- 기존 등록 전용 화면 호환 유지 -->
     <div id="setupPage" style="display:none;">
 
       <div class="setup-note">
         <b>홈 화면 바로가기 등록</b><br>
-        아래 버튼을 눌러 등록용 주소를 준비하십시오.
+        아래 버튼을 눌러 등록을 준비하십시오.
       </div>
 
       <button
@@ -206,14 +215,8 @@
 
         <p>
           <b>삼성 인터넷</b><br>
-          하단 메뉴(☰ 또는 ⋮) →
-          현재 페이지 추가 →
-          홈 화면 → 추가
-        </p>
-
-        <p>
-          등록한 아이콘을 누르면
-          참가 신청 화면으로 바로 이동합니다.
+          메뉴(☰ 또는 ⋮) →
+          홈 화면에 추가 → 추가
         </p>
 
       </div>
@@ -222,15 +225,15 @@
   </div>
 
   <script>
+
     /**************************************************
      * 2026.11.23
      * 파크골프 참가 신청 GitHub 연결
      *
-     * - 일반 공유 링크: 기존 두 버튼
-     * - setup=1: 바로가기 등록 화면
-     * - home=1: 참가 신청 자동 연결
-     * - PWA 독립 실행: 자동 연결
-     * - 대회ID 기억 기능
+     * 일반 공유 URL : 안내 화면
+     * 홈 화면 등록 : home=1 주소 준비
+     * 홈 화면 실행 : 참가 신청 자동 연결
+     * 기존 setup=1 기능 유지
      **************************************************/
 
     const GS_BASE_URL =
@@ -277,6 +280,7 @@
         return PG_isValidEventId_(savedId)
           ? savedId
           : "";
+
       } catch (error) {
         return "";
       }
@@ -284,6 +288,8 @@
 
     /**************************************************
      * 대회ID 확인
+     *
+     * 대회별 HTML 파일명도 확인
      **************************************************/
     function PG_getEventId_() {
 
@@ -292,9 +298,25 @@
 
       const requestedId = params.get("eventId");
 
-      return PG_isValidEventId_(requestedId)
-        ? requestedId
-        : PG_getSavedEventId_();
+      if (PG_isValidEventId_(requestedId)) {
+        return requestedId;
+      }
+
+      const fileName =
+        window.location.pathname
+          .split("/")
+          .pop();
+
+      const match =
+        fileName.match(
+          /^(PG-\d{4}-\d{3,})\.html$/i
+        );
+
+      if (match && PG_isValidEventId_(match[1])) {
+        return match[1];
+      }
+
+      return PG_getSavedEventId_();
     }
 
     /**************************************************
@@ -308,6 +330,7 @@
       if (btn.disabled) return;
 
       btn.disabled = true;
+
       btn.textContent =
         "⏳ 참가 신청 화면 연결 중...";
 
@@ -338,8 +361,8 @@
     /**************************************************
      * 홈 화면 바로가기 등록 준비
      *
-     * setup=1 주소를 home=1 주소로 변경
-     * 화면은 그대로 유지하여 바로가기 등록 가능
+     * 현재 페이지 주소에 home=1 추가
+     * 화면 이동 없이 주소만 변경
      **************************************************/
     function prepareHomeShortcut() {
 
@@ -351,29 +374,51 @@
       const url = new URL(window.location.href);
 
       url.searchParams.delete("setup");
+
       url.searchParams.set("eventId", eventId);
+
       url.searchParams.set("home", "1");
 
-      // 주소만 변경하고 화면 이동은 하지 않음
       window.history.replaceState(
         null,
         "",
         url.toString()
       );
 
-      const btn =
-        document.getElementById("prepareHomeBtn");
+      const normalPage =
+        document.getElementById("normalPage");
 
-      btn.textContent =
-        "✅ 바로가기 등록 준비 완료";
+      const setupPage =
+        document.getElementById("setupPage");
 
-      btn.disabled = true;
+      if (normalPage.style.display !== "none") {
 
-      document.querySelector(
-        "#setupInstructions p"
-      ).innerHTML =
-        "<b>이제 삼성 인터넷 하단 메뉴를 누르십시오.</b><br>" +
-        "현재 페이지 추가 → 홈 화면 → 추가";
+        const btn =
+          document.getElementById("installBtn");
+
+        btn.textContent =
+          "✅ 바로가기 등록 준비 완료";
+
+        btn.disabled = true;
+
+        showInstructions();
+
+      } else {
+
+        const btn =
+          document.getElementById("prepareHomeBtn");
+
+        btn.textContent =
+          "✅ 바로가기 등록 준비 완료";
+
+        btn.disabled = true;
+
+        document.querySelector(
+          "#setupInstructions p"
+        ).innerHTML =
+          "<b>이제 브라우저 메뉴를 누르십시오.</b><br>" +
+          "홈 화면에 추가 → 추가";
+      }
     }
 
     /**************************************************
@@ -384,13 +429,13 @@
       const params =
         new URLSearchParams(window.location.search);
 
-      const requestedId = params.get("eventId");
+      const eventId = PG_getEventId_();
 
-      if (PG_isValidEventId_(requestedId)) {
-        PG_saveEventId_(requestedId);
+      if (PG_isValidEventId_(eventId)) {
+        PG_saveEventId_(eventId);
       }
 
-      // 등록 전용 화면
+      // 기존 등록 전용 주소 호환
       if (params.get("setup") === "1") {
 
         document.getElementById("normalPage")
@@ -413,14 +458,11 @@
         ).matches ||
         window.navigator.standalone === true;
 
-      // 일반 공유 링크는 기존 화면 유지
+      // 일반 공유 링크는 안내 화면 유지
       if (!isHomeLink && !isStandalone) return;
-
-      const eventId = PG_getEventId_();
 
       if (!eventId) return;
 
-      // 기존 openEvent()에 정확한 ID 전달
       const url = new URL(window.location.href);
 
       url.searchParams.set("eventId", eventId);
@@ -464,7 +506,7 @@
     });
 
     /**************************************************
-     * 홈 화면 설치 안내 아코디언
+     * 홈 화면 설치 안내
      **************************************************/
     function toggleGuide() {
 
@@ -488,38 +530,19 @@
     }
 
     /**************************************************
-     * PWA 설치 요청
+     * 홈 화면 바로가기 준비
+     *
+     * 별도 URL 배포 없이
+     * 기존 공유 화면에서 바로 등록
      **************************************************/
-    let deferredPrompt = null;
+    function installApp() {
 
-    window.addEventListener(
-      "beforeinstallprompt",
-      function(event) {
-
-        event.preventDefault();
-        deferredPrompt = event;
-      }
-    );
-
-    async function installApp() {
-
-      if (deferredPrompt) {
-
-        const promptEvent = deferredPrompt;
-        deferredPrompt = null;
-
-        try {
-          await promptEvent.prompt();
-        } catch (error) {
-          console.warn("설치 요청 실패:", error);
-          showInstructions();
-        }
-
-      } else {
-        showInstructions();
-      }
+      prepareHomeShortcut();
     }
 
+    /**************************************************
+     * 등록 안내 표시
+     **************************************************/
     function showInstructions() {
 
       document.getElementById("instructions")
@@ -542,6 +565,7 @@
           console.error("PWA 등록 실패:", error);
         });
     }
+
   </script>
 
 </body>
