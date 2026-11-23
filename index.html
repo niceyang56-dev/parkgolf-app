@@ -129,6 +129,7 @@ button {
 
   <h1>🏌️ 대회 참가 신청</h1>
 
+  <!-- 1번 화면 -->
   <button class="primary"
           id="openEventBtn"
           onclick="openEvent()">
@@ -142,39 +143,41 @@ button {
   <button class="accordion"
           id="guideBtn"
           aria-expanded="false"
+          aria-controls="installGuide"
           onclick="toggleGuide()">
     홈 화면에 바로가기 추가 ▼
   </button>
 
   <div class="guide" id="installGuide">
 
+    <!-- 2번 화면 : 실행 선택 -->
     <div id="beforePrepare">
 
-      <div class="notice">
-        <b>카카오톡·밴드에서 접속하셨나요?</b><br>
-        먼저 메뉴(⋮)에서
-        <b>다른 브라우저로 열기</b>를
-        선택하십시오.
-        <br><br>
-        삼성 인터넷·크롬·Safari에서
-        아래 버튼을 누르십시오.
+      <div class="guide-title">
+        홈 화면 바로가기를 준비하시겠습니까?
       </div>
 
       <button class="execute"
+              id="prepareBtn"
               onclick="prepareShortcut()">
         📲 홈 화면 바로가기 실행
       </button>
 
     </div>
 
+    <!-- 3번 화면 : 실행 준비 완료 -->
     <div id="completeArea">
 
-      <div class="complete">
-        ✅ 바로가기 실행 준비 완료
+      <!-- 가장 위 : 카카오톡·밴드 안내 -->
+      <div class="notice">
+        <b>카카오톡·밴드에서 접속하셨나요?</b><br>
+        화면 메뉴(⋮)에서
+        <b>다른 브라우저로 열기</b>를 선택하십시오.
       </div>
 
+      <!-- 브라우저별 설치 안내 -->
       <div class="guide-title">
-        아래 순서로 진행하십시오.
+        브라우저별 홈 화면 추가 방법
       </div>
 
       <div class="step">
@@ -194,10 +197,16 @@ button {
         공유 버튼 → 홈 화면에 추가
       </div>
 
+      <!-- 겨자색 완료 표시 -->
+      <div class="complete">
+        ✅ 바로가기 실행 준비 완료
+      </div>
+
+      <!-- 마지막 안내 -->
       <div class="step">
         <b>④ 등록 후</b><br>
-        홈 화면에 추가된 아이콘을
-        눌러 참가 신청 화면을 여십시오.
+        홈 화면에 추가된 아이콘을 누르면
+        해당 대회 참가 신청 화면으로 이동합니다.
       </div>
 
     </div>
@@ -209,8 +218,11 @@ button {
 <script>
 /**************************************************
  * 파크골프 참가 신청
- * index.html 복구 및 바로가기 안내
+ * index.html
  * 2026.11.23
+ *
+ * 1번 → 2번 → 3번 화면 표시 순서 개선
+ * 기존 참가 신청 연결 기능 유지
  **************************************************/
 
 const GS_BASE_URL =
@@ -307,7 +319,7 @@ function openEvent() {
 }
 
 /**************************************************
- * 바로가기 안내 열기 / 닫기
+ * 안내창 열기 / 닫기
  **************************************************/
 function toggleGuide() {
 
@@ -320,11 +332,17 @@ function toggleGuide() {
     ? "홈 화면에 바로가기 추가 ▲"
     : "홈 화면에 바로가기 추가 ▼";
 
-  btn.setAttribute("aria-expanded",String(opened));
+  btn.setAttribute(
+    "aria-expanded",
+    String(opened)
+  );
 }
 
 /**************************************************
- * 바로가기 실행 준비
+ * 홈 화면 바로가기 준비
+ *
+ * 기존 주소 처리 방식 유지
+ * 이번 수정은 안내문 배치만 변경
  **************************************************/
 function prepareShortcut() {
 
@@ -343,7 +361,11 @@ function prepareShortcut() {
   url.searchParams.set("home","1");
   url.searchParams.delete("setup");
 
-  history.replaceState(null,"",url.toString());
+  history.replaceState(
+    null,
+    "",
+    url.toString()
+  );
 
   document.getElementById("beforePrepare")
     .style.display = "none";
@@ -372,7 +394,9 @@ function initializePage() {
   const homeMode = params.get("home") === "1";
 
   const standalone =
-    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches ||
     navigator.standalone === true;
 
   if ((homeMode || standalone) && id) {
@@ -381,7 +405,7 @@ function initializePage() {
 }
 
 /**************************************************
- * 뒤로 돌아올 때 버튼 복구
+ * 뒤로 돌아왔을 때 버튼 복구
  **************************************************/
 window.addEventListener("pageshow",function() {
 
@@ -395,7 +419,7 @@ window.addEventListener("pageshow",function() {
 });
 
 /**************************************************
- * 시작
+ * 화면 시작
  **************************************************/
 if (document.readyState === "loading") {
   document.addEventListener(
