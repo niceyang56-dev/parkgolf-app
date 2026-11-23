@@ -2,27 +2,58 @@
 /**************************************************
  * 파크골프 참가 신청 PWA
  * Service Worker
- * 2026.11.23
+ * 2026.11.23 개선
+ *
+ * - 기존 캐시 버전 갱신
+ * - 이전 버전 캐시 자동 삭제
+ * - 기존 대회별 URL 유지
  **************************************************/
 
-const CACHE_NAME = 'parkgolf-pwa-v1';
+const CACHE_NAME = "parkgolf-pwa-v2";
 
 const APP_FILES = [
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './parkgolf-192.png',
-  './parkgolf-512.png'
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./parkgolf-192.png",
+  "./parkgolf-512.png"
 ];
 
-self.addEventListener('install', event => {
+/**************************************************
+ * 1. 서비스 워커 설치
+ **************************************************/
+self.addEventListener("install", event => {
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(APP_FILES))
   );
+
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
+/**************************************************
+ * 2. 서비스 워커 활성화
+ * - 이전 캐시 삭제
+ **************************************************/
+self.addEventListener("activate", event => {
+
+  event.waitUntil(
+
+    caches.keys().then(keys => {
+
+      return Promise.all(
+
+        keys
+          .filter(key =>
+            key.startsWith("parkgolf-pwa-") &&
+            key !== CACHE_NAME
+          )
+          .map(key => caches.delete(key))
+
+      );
+
+    }).then(() => self.clients.claim())
+
+  );
 });
