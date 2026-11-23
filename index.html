@@ -49,14 +49,14 @@
       cursor: pointer;
     }
 
-    .primary {
+    .primary,
+    .execute {
       background: #086cc5;
       color: white;
     }
 
     .primary:disabled {
       background: #538fbe;
-      cursor: wait;
     }
 
     .accordion {
@@ -91,6 +91,10 @@
     .guide p {
       margin: 6px 0 10px;
       line-height: 1.4;
+    }
+
+    .execute {
+      margin: 4px 0 12px;
     }
 
     .loading-note {
@@ -145,6 +149,14 @@
           📲 홈 화면 바로가기 방법
         </div>
 
+        <!-- 바로가기 실행 버튼 -->
+        <button
+          class="execute"
+          id="homeShortcutBtn"
+          onclick="executeHomeShortcut()">
+          📲 홈 화면 바로가기 실행
+        </button>
+
         <p>
           <b>① 카카오톡·밴드</b><br>
           메뉴(⋮) → 다른 브라우저로 열기
@@ -181,21 +193,21 @@
     <!-- 기존 setup=1 주소 호환 -->
     <div id="setupPage" style="display:none;">
 
-      <button
-        class="accordion"
-        id="setupGuideBtn"
-        onclick="prepareHomeShortcut()">
-        홈 화면에 바로가기 추가 ▼
-      </button>
-
       <div class="guide show">
 
         <div class="guide-title">
           📲 홈 화면 바로가기 방법
         </div>
 
+        <button
+          class="execute"
+          id="prepareHomeBtn"
+          onclick="executeHomeShortcut()">
+          📲 홈 화면 바로가기 실행
+        </button>
+
         <p>
-          브라우저 메뉴에서
+          실행 버튼을 누른 뒤 브라우저 메뉴에서
           홈 화면에 추가하십시오.
         </p>
 
@@ -211,11 +223,10 @@
      * 2026.11.23
      * 대회 참가 신청 GitHub 연결
      *
-     * 일반 공유 URL : 안내 화면
-     * 바로가기 버튼 : 주소 준비 + 안내 표시
+     * 기존 L열 URL 유지
+     * 일반 접속 : 안내 화면
+     * 바로가기 실행 : home=1 주소 준비
      * 홈 화면 아이콘 : 참가 신청 자동 연결
-     *
-     * J열 / L열 URL 변경 없음
      **************************************************/
 
     const GS_BASE_URL =
@@ -269,10 +280,6 @@
 
     /**************************************************
      * 대회ID 확인
-     *
-     * URL의 eventId 우선
-     * 대회별 HTML 파일명 확인
-     * 저장된 대회ID 확인
      **************************************************/
     function PG_getEventId_() {
 
@@ -338,9 +345,6 @@
 
     /**************************************************
      * 홈 화면 바로가기 주소 준비
-     *
-     * 현재 페이지에 home=1 설정
-     * 실제 화면 이동은 하지 않음
      **************************************************/
     function prepareHomeShortcut() {
 
@@ -363,10 +367,34 @@
     }
 
     /**************************************************
-     * 홈 화면 안내 열기 / 닫기
+     * 홈 화면 바로가기 실행
      *
-     * 열 때 자동으로 바로가기 주소 준비
-     * 별도 준비 / 완료 버튼 없음
+     * - 기존 준비 함수 호출
+     * - 실행 완료 문구 표시
+     **************************************************/
+    function executeHomeShortcut() {
+
+      prepareHomeShortcut();
+
+      const btn =
+        document.getElementById("homeShortcutBtn");
+
+      if (btn) {
+        btn.textContent =
+          "✅ 바로가기 실행 준비 완료";
+      }
+
+      const setupBtn =
+        document.getElementById("prepareHomeBtn");
+
+      if (setupBtn) {
+        setupBtn.textContent =
+          "✅ 바로가기 실행 준비 완료";
+      }
+    }
+
+    /**************************************************
+     * 안내창 열기 / 닫기
      **************************************************/
     function toggleGuide() {
 
@@ -377,35 +405,16 @@
         document.getElementById("guideBtn");
 
       const opened =
-        guide.classList.contains("show");
-
-      if (opened) {
-
-        guide.classList.remove("show");
-
-        btn.textContent =
-          "홈 화면에 바로가기 추가 ▼";
-
-        btn.setAttribute(
-          "aria-expanded",
-          "false"
-        );
-
-        return;
-      }
-
-      // 안내창을 열 때 주소 자동 준비
-      prepareHomeShortcut();
-
-      guide.classList.add("show");
-
-      btn.textContent =
-        "홈 화면에 바로가기 추가 ▲";
+        guide.classList.toggle("show");
 
       btn.setAttribute(
         "aria-expanded",
-        "true"
+        String(opened)
       );
+
+      btn.textContent = opened
+        ? "홈 화면에 바로가기 추가 ▲"
+        : "홈 화면에 바로가기 추가 ▼";
     }
 
     /**************************************************
@@ -422,7 +431,7 @@
         PG_saveEventId_(eventId);
       }
 
-      // 기존 등록 전용 URL 호환
+      // 기존 setup=1 주소 호환
       if (params.get("setup") === "1") {
 
         document.getElementById("normalPage")
@@ -484,9 +493,7 @@
         document.getElementById("openEventBtn");
 
       btn.disabled = false;
-
-      btn.textContent =
-        "참가 신청 화면 열기";
+      btn.textContent = "참가 신청 화면 열기";
 
       document.getElementById("loadingNote")
         .classList.remove("show");
@@ -501,16 +508,11 @@
         .register("./sw.js")
 
         .then(function() {
-          console.log(
-            "PWA 서비스 워커 등록 완료"
-          );
+          console.log("PWA 서비스 워커 등록 완료");
         })
 
         .catch(function(error) {
-          console.error(
-            "PWA 등록 실패:",
-            error
-          );
+          console.error("PWA 등록 실패:", error);
         });
     }
 
