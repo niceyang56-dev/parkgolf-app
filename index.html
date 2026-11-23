@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -31,7 +30,9 @@
       box-shadow: 0 3px 12px #0001;
     }
 
-    h1 { font-size: 25px; }
+    h1 {
+      font-size: 25px;
+    }
 
     p {
       font-size: 17px;
@@ -56,6 +57,7 @@
 
   <div class="card">
     <h1>🏌️ 파크골프 참가 신청</h1>
+
     <p>참가 신청 화면으로 연결하고 있습니다.</p>
 
     <button onclick="openEvent()">
@@ -65,37 +67,146 @@
 
   <script>
     /**************************************************
-     * 참가 신청 웹앱 연결
+     * 개인별 마지막 대회 저장 및 자동 연결
      * 2026.11.23
-     * - 홈 화면 아이콘 실행 시 자동 연결
-     * - 기존 GS 웹앱 유지
+     *
+     * 1. 공유 URL에서 대회ID 자동 인식
+     * 2. 마지막 대회 하나만 저장
+     * 3. 홈 화면 아이콘 실행 시 자동 연결
+     * 4. 기존 GS 웹앱 유지
      **************************************************/
 
-    const EVENT_URL =
+    const GS_BASE_URL =
       "https://script.google.com/macros/s/" +
       "AKfycbySUNGARDitfAqrmdNQoCO1Pb55l72CsMGznm1eay56Zd24ufCZBXfBX467NbIDa4M9" +
-      "/exec?eventId=PG-2026-004";
+      "/exec";
 
-    function openEvent() {
-      window.location.replace(EVENT_URL);
+    const STORAGE_KEY = "PG_LAST_EVENT_URL";
+
+    /**************************************************
+     * 저장된 주소가 정상적인 GS 웹앱 주소인지 확인
+     **************************************************/
+    function isValidEventUrl(value) {
+      try {
+        const url = new URL(value);
+
+        return (
+          url.origin === "https://script.google.com" &&
+          url.pathname === new URL(GS_BASE_URL).pathname &&
+          /^PG-\d{4}-\d{3,}$/.test(
+            url.searchParams.get("eventId") || ""
+          )
+        );
+      } catch (error) {
+        return false;
+      }
     }
 
-    // 페이지가 열리면 자동으로 참가 신청 화면 이동
-    window.addEventListener('load', function() {
-      setTimeout(openEvent, 500);
-    });
+    /**************************************************
+     * 참가 신청 웹앱 연결
+     **************************************************/
+    function openEvent() {
+
+      const params =
+        new URLSearchParams(window.location.search);
+
+      const eventId = params.get("eventId");
+      const preview = params.get("preview");
+
+      let eventUrl = "";
+
+      // 1. 공유 URL에 새로운 대회ID가 있는 경우
+      if (
+        eventId &&
+        /^PG-\d{4}-\d{3,}$/.test(eventId)
+      ) {
+
+        const url = new URL(GS_BASE_URL);
+
+        url.searchParams.set("eventId", eventId);
+
+        // preview 값이 있으면 그대로 전달
+        if (preview && /^\d+$/.test(preview)) {
+          url.searchParams.set("preview", preview);
+        }
+
+        eventUrl = url.toString();
+
+        // 마지막 대회 하나만 저장
+        try {
+          localStorage.setItem(
+            STORAGE_KEY,
+            eventUrl
+          );
+        } catch (error) {
+          console.warn(
+            "대회정보 저장 실패:",
+            error
+          );
+        }
+
+      } else {
+
+        // 2. 공유 대회ID가 없으면 마지막 대회 불러오기
+        try {
+          const savedUrl =
+            localStorage.getItem(STORAGE_KEY);
+
+          if (
+            savedUrl &&
+            isValidEventUrl(savedUrl)
+          ) {
+            eventUrl = savedUrl;
+          }
+        } catch (error) {
+          console.warn(
+            "대회정보 읽기 실패:",
+            error
+          );
+        }
+      }
+
+      // 3. 최초 설치자용 기본 대회
+      if (!eventUrl) {
+        eventUrl =
+          GS_BASE_URL +
+          "?eventId=PG-2026-004";
+      }
+
+      // 4. 해당 대회 참가 신청 화면으로 이동
+      window.location.replace(eventUrl);
+    }
+
+    /**************************************************
+     * 홈 화면 아이콘 실행 시 자동 연결
+     **************************************************/
+    window.addEventListener(
+      "load",
+      function() {
+        setTimeout(openEvent, 500);
+      }
+    );
 
     /**************************************************
      * PWA 서비스 워커 등록
+     * 기존 기능 유지
      **************************************************/
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
+
       navigator.serviceWorker
-        .register('./sw.js')
+        .register("./sw.js")
+
         .then(function() {
-          console.log('PWA 서비스 워커 등록 완료');
+          console.log(
+            "PWA 서비스 워커 등록 완료"
+          );
         })
+
         .catch(function(error) {
-          console.error('PWA 등록 실패:', error);
+          console.error(
+            "PWA 등록 실패:",
+            error
+          );
         });
     }
   </script>
