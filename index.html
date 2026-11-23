@@ -1,14 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#086cc5">
-
-  <title>파크골프 참가 신청</title>
+  <title>대회 참가 신청</title>
 
   <style>
     body {
@@ -51,7 +49,6 @@
 
     .primary:disabled {
       background: #538fbe;
-      cursor: wait;
     }
 
     .accordion {
@@ -76,22 +73,14 @@
       display: block;
     }
 
+    .guide p {
+      margin: 8px 0;
+    }
+
     .install {
+      margin-top: 12px;
       background: #086cc5;
       color: white;
-      margin-bottom: 12px;
-    }
-
-    .instructions {
-      display: none;
-    }
-
-    .instructions.show {
-      display: block;
-    }
-
-    .instructions p {
-      margin: 10px 0;
     }
 
     .loading-note {
@@ -104,12 +93,6 @@
     .loading-note.show {
       display: block;
     }
-
-    .setup-note {
-      margin: 12px 0 18px;
-      font-size: 17px;
-      line-height: 1.6;
-    }
   </style>
 </head>
 
@@ -117,9 +100,8 @@
 
   <div class="card">
 
-    <h1>🏌️ 파크골프 참가 신청</h1>
+    <h1>🏌️ 대회 참가 신청</h1>
 
-    <!-- 일반 공유 링크 화면 -->
     <div id="normalPage">
 
       <button
@@ -148,6 +130,31 @@
 
       <div class="guide" id="installGuide">
 
+        <b>📲 홈 화면 바로가기 등록 방법</b>
+
+        <p>
+          <b>① 카카오톡·밴드</b><br>
+          메뉴(⋮) → 다른 브라우저로 열기
+        </p>
+
+        <p>
+          <b>② 삼성 인터넷</b><br>
+          아래 준비 버튼을 누른 후<br>
+          메뉴(☰ 또는 ⋮) → 홈 화면에 추가 → 추가
+        </p>
+
+        <p>
+          <b>③ 크롬</b><br>
+          아래 준비 버튼을 누른 후<br>
+          메뉴(⋮) → 홈 화면에 추가
+        </p>
+
+        <p>
+          <b>④ 아이폰 Safari</b><br>
+          아래 준비 버튼을 누른 후<br>
+          공유 버튼 → 홈 화면에 추가
+        </p>
+
         <button
           class="install"
           id="installBtn"
@@ -155,71 +162,33 @@
           📲 홈 화면 바로가기 준비
         </button>
 
-        <div class="instructions" id="instructions">
-
-          <p>
-            <b>① 카카오톡·밴드에서 접속한 경우</b><br>
-            메뉴(⋮) →
-            다른 브라우저로 열기
-          </p>
-
-          <p>
-            <b>② 삼성 인터넷</b><br>
-            홈 화면 바로가기 준비 버튼을 누른 후<br>
-            메뉴(☰ 또는 ⋮) →
-            홈 화면에 추가 → 추가
-          </p>
-
-          <p>
-            <b>③ 크롬</b><br>
-            메뉴(⋮) →
-            홈 화면에 추가
-          </p>
-
-          <p>
-            <b>④ 아이폰 Safari</b><br>
-            공유 버튼 →
-            홈 화면에 추가
-          </p>
-
-          <p>
-            <b>⑤ 등록 완료 후</b><br>
-            홈 화면 아이콘을 누르면
-            참가 신청 화면으로 바로 이동합니다.
-          </p>
-
-        </div>
+        <p id="readyNote" style="display:none;">
+          홈 화면에 추가한 뒤 아이콘을 누르면
+          참가 신청 화면으로 바로 이동합니다.
+        </p>
 
       </div>
     </div>
 
-    <!-- 기존 등록 전용 화면 호환 유지 -->
+    <!-- 기존 setup=1 주소 호환 -->
     <div id="setupPage" style="display:none;">
 
-      <div class="setup-note">
-        <b>홈 화면 바로가기 등록</b><br>
-        아래 버튼을 눌러 등록을 준비하십시오.
-      </div>
-
-      <button
-        class="primary"
-        id="prepareHomeBtn"
-        onclick="prepareHomeShortcut()">
-        📲 홈 화면 바로가기 준비
-      </button>
-
-      <div
-        id="setupInstructions"
-        class="guide"
-        style="display:block;">
+      <div class="guide show">
+        <b>📲 홈 화면 바로가기 등록 방법</b>
 
         <p>
-          <b>삼성 인터넷</b><br>
-          메뉴(☰ 또는 ⋮) →
-          홈 화면에 추가 → 추가
+          아래 준비 버튼을 누른 뒤
+          브라우저 메뉴에서 홈 화면에 추가하십시오.
         </p>
 
+        <button
+          class="install"
+          id="prepareHomeBtn"
+          onclick="prepareHomeShortcut()">
+          📲 홈 화면 바로가기 준비
+        </button>
       </div>
+
     </div>
 
   </div>
@@ -228,12 +197,12 @@
 
     /**************************************************
      * 2026.11.23
-     * 파크골프 참가 신청 GitHub 연결
+     * 대회 참가 신청 GitHub 연결
      *
-     * 일반 공유 URL : 안내 화면
-     * 홈 화면 등록 : home=1 주소 준비
+     * L열 기존 URL 유지
+     * 일반 접속 : 안내 화면
+     * 바로가기 준비 : home=1 설정
      * 홈 화면 실행 : 참가 신청 자동 연결
-     * 기존 setup=1 기능 유지
      **************************************************/
 
     const GS_BASE_URL =
@@ -244,18 +213,11 @@
     const PG_EVENT_STORAGE_KEY =
       "PG_LAST_EVENT_ID";
 
-    /**************************************************
-     * 대회ID 형식 확인
-     **************************************************/
     function PG_isValidEventId_(id) {
       return /^PG-\d{4}-\d{3,}$/.test(id || "");
     }
 
-    /**************************************************
-     * 대회ID 저장
-     **************************************************/
     function PG_saveEventId_(eventId) {
-
       if (!PG_isValidEventId_(eventId)) return;
 
       try {
@@ -268,29 +230,18 @@
       }
     }
 
-    /**************************************************
-     * 기억된 대회ID 조회
-     **************************************************/
     function PG_getSavedEventId_() {
-
       try {
         const savedId =
           localStorage.getItem(PG_EVENT_STORAGE_KEY);
 
         return PG_isValidEventId_(savedId)
-          ? savedId
-          : "";
-
+          ? savedId : "";
       } catch (error) {
         return "";
       }
     }
 
-    /**************************************************
-     * 대회ID 확인
-     *
-     * 대회별 HTML 파일명도 확인
-     **************************************************/
     function PG_getEventId_() {
 
       const params =
@@ -303,14 +254,10 @@
       }
 
       const fileName =
-        window.location.pathname
-          .split("/")
-          .pop();
+        window.location.pathname.split("/").pop();
 
       const match =
-        fileName.match(
-          /^(PG-\d{4}-\d{3,})\.html$/i
-        );
+        fileName.match(/^(PG-\d{4}-\d{3,})\.html$/i);
 
       if (match && PG_isValidEventId_(match[1])) {
         return match[1];
@@ -330,7 +277,6 @@
       if (btn.disabled) return;
 
       btn.disabled = true;
-
       btn.textContent =
         "⏳ 참가 신청 화면 연결 중...";
 
@@ -360,9 +306,6 @@
 
     /**************************************************
      * 홈 화면 바로가기 등록 준비
-     *
-     * 현재 페이지 주소에 home=1 추가
-     * 화면 이동 없이 주소만 변경
      **************************************************/
     function prepareHomeShortcut() {
 
@@ -374,22 +317,15 @@
       const url = new URL(window.location.href);
 
       url.searchParams.delete("setup");
-
       url.searchParams.set("eventId", eventId);
-
       url.searchParams.set("home", "1");
 
       window.history.replaceState(
-        null,
-        "",
-        url.toString()
+        null, "", url.toString()
       );
 
       const normalPage =
         document.getElementById("normalPage");
-
-      const setupPage =
-        document.getElementById("setupPage");
 
       if (normalPage.style.display !== "none") {
 
@@ -397,11 +333,10 @@
           document.getElementById("installBtn");
 
         btn.textContent =
-          "✅ 바로가기 등록 준비 완료";
+          "✅ 바로가기 준비 완료";
 
-        btn.disabled = true;
-
-        showInstructions();
+        document.getElementById("readyNote")
+          .style.display = "block";
 
       } else {
 
@@ -409,16 +344,66 @@
           document.getElementById("prepareHomeBtn");
 
         btn.textContent =
-          "✅ 바로가기 등록 준비 완료";
-
-        btn.disabled = true;
-
-        document.querySelector(
-          "#setupInstructions p"
-        ).innerHTML =
-          "<b>이제 브라우저 메뉴를 누르십시오.</b><br>" +
-          "홈 화면에 추가 → 추가";
+          "✅ 바로가기 준비 완료";
       }
+    }
+
+    /**************************************************
+     * 홈 화면 등록 버튼
+     *
+     * 첫 터치 : 바로가기 준비
+     * 두 번째 터치 : 안내창 닫기
+     **************************************************/
+    function installApp() {
+
+      const btn =
+        document.getElementById("installBtn");
+
+      if (btn.dataset.ready === "1") {
+
+        closeGuide();
+        return;
+      }
+
+      prepareHomeShortcut();
+
+      btn.dataset.ready = "1";
+    }
+
+    /**************************************************
+     * 안내창 열기 / 닫기
+     **************************************************/
+    function toggleGuide() {
+
+      const guide =
+        document.getElementById("installGuide");
+
+      const opened =
+        guide.classList.contains("show");
+
+      if (opened) {
+        closeGuide();
+      } else {
+        guide.classList.add("show");
+
+        document.getElementById("guideBtn")
+          .setAttribute("aria-expanded", "true");
+
+        document.getElementById("guideBtn")
+          .textContent = "홈 화면에 바로가기 추가 ▲";
+      }
+    }
+
+    function closeGuide() {
+
+      document.getElementById("installGuide")
+        .classList.remove("show");
+
+      document.getElementById("guideBtn")
+        .setAttribute("aria-expanded", "false");
+
+      document.getElementById("guideBtn")
+        .textContent = "홈 화면에 바로가기 추가 ▼";
     }
 
     /**************************************************
@@ -435,7 +420,6 @@
         PG_saveEventId_(eventId);
       }
 
-      // 기존 등록 전용 주소 호환
       if (params.get("setup") === "1") {
 
         document.getElementById("normalPage")
@@ -447,45 +431,33 @@
         return;
       }
 
-      // 홈 화면 전용 주소
       const isHomeLink =
         params.get("home") === "1";
 
-      // 독립 실행형 PWA
       const isStandalone =
         window.matchMedia(
           "(display-mode: standalone)"
         ).matches ||
         window.navigator.standalone === true;
 
-      // 일반 공유 링크는 안내 화면 유지
       if (!isHomeLink && !isStandalone) return;
-
       if (!eventId) return;
 
       const url = new URL(window.location.href);
-
       url.searchParams.set("eventId", eventId);
 
       window.history.replaceState(
-        null,
-        "",
-        url.toString()
+        null, "", url.toString()
       );
 
       openEvent();
     }
 
-    /**************************************************
-     * 화면 준비 후 실행
-     **************************************************/
     if (document.readyState === "loading") {
-
       document.addEventListener(
         "DOMContentLoaded",
         PG_initializePage_
       );
-
     } else {
       PG_initializePage_();
     }
@@ -504,50 +476,6 @@
       document.getElementById("loadingNote")
         .classList.remove("show");
     });
-
-    /**************************************************
-     * 홈 화면 설치 안내
-     **************************************************/
-    function toggleGuide() {
-
-      const guide =
-        document.getElementById("installGuide");
-
-      const button =
-        document.getElementById("guideBtn");
-
-      const opened =
-        guide.classList.toggle("show");
-
-      button.setAttribute(
-        "aria-expanded",
-        String(opened)
-      );
-
-      button.textContent = opened
-        ? "홈 화면에 바로가기 추가 ▲"
-        : "홈 화면에 바로가기 추가 ▼";
-    }
-
-    /**************************************************
-     * 홈 화면 바로가기 준비
-     *
-     * 별도 URL 배포 없이
-     * 기존 공유 화면에서 바로 등록
-     **************************************************/
-    function installApp() {
-
-      prepareHomeShortcut();
-    }
-
-    /**************************************************
-     * 등록 안내 표시
-     **************************************************/
-    function showInstructions() {
-
-      document.getElementById("instructions")
-        .classList.add("show");
-    }
 
     /**************************************************
      * PWA 서비스 워커 등록
