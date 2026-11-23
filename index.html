@@ -143,12 +143,6 @@
           📲 홈 화면 바로가기 방법
         </div>
 
-        <button
-          class="install"
-          id="installBtn"
-          onclick="prepareHomeShortcut()">
-          홈 화면 바로가기 준비
-        </button>
 
         <p>
           <b>① 카카오톡·밴드</b><br>
@@ -363,25 +357,31 @@
       }
     }
 
-    /**************************************************
-     * 등록 완료 버튼
-     * 안내창 닫기 및 버튼 문구 변경
-     **************************************************/
-    function finishHomeShortcut() {
+    
+/**************************************************
+ * 2026.11.23
+ * 홈 화면 등록 완료
+ * - 바로가기 주소 자동 준비
+ * - 안내창 닫기
+ **************************************************/
+function finishHomeShortcut() {
 
-      if (!homeShortcutReady) {
-        prepareHomeShortcut();
-      }
+  // 홈 화면 자동 진입 주소 준비
+  prepareHomeShortcut();
 
-      document.getElementById("installGuide")
-        .classList.remove("show");
+  // 안내창 닫기
+  const guide =
+    document.getElementById("installGuide");
 
-      const btn =
-        document.getElementById("guideBtn");
+  guide.classList.remove("show");
 
-      btn.textContent = "홈 화면 바로가기 추가 ▼";
-      btn.setAttribute("aria-expanded", "false");
-    }
+  // 상단 버튼 원래 상태로 복원
+  const btn =
+    document.getElementById("guideBtn");
+
+  btn.textContent = "홈 화면에 바로가기 추가 ▼";
+  btn.setAttribute("aria-expanded", "false");
+}
 
     /**************************************************
      * 안내창 열기 / 닫기
