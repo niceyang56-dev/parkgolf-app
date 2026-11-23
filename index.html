@@ -98,10 +98,12 @@
 
     <h1>🏌️ 파크골프 참가 신청</h1>
 
+    <!-- 첫 번째 버튼 -->
     <button class="primary" onclick="openEvent()">
       참가 신청 화면 열기
     </button>
 
+    <!-- 두 번째 버튼 : 아코디언 -->
     <button
       class="accordion"
       id="guideBtn"
@@ -113,31 +115,37 @@
 
     <div class="guide" id="installGuide">
 
+      <!-- 설치 버튼 -->
       <button class="install" onclick="installApp()">
         📲 홈 화면에 설치하기
       </button>
 
+      <!-- 설치 안내문 -->
       <div class="instructions" id="instructions">
 
-        <p><b>삼성 인터넷</b><br>
-          메뉴(≡ 또는 ⋮) →
-          현재 페이지 추가 →
-          홈 화면
+        <p>
+          <b>① 카카오톡에서 접속한 경우</b><br>
+          카카오톡에서 열었다면 먼저 메뉴에서
+          「다른 브라우저로 열기」를 선택해 주십시오.
         </p>
 
-        <p><b>크롬</b><br>
+        <p>
+          <b>② 삼성 인터넷</b><br>
+          메뉴(≡ 또는 ⋮) →
+          현재 페이지 추가 →
+          홈 화면 → 추가
+        </p>
+
+        <p>
+          <b>③ 크롬</b><br>
           메뉴(⋮) →
           홈 화면에 추가 또는 앱 설치
         </p>
 
-        <p><b>아이폰 Safari</b><br>
+        <p>
+          <b>④ 아이폰 Safari</b><br>
           공유 버튼 →
           홈 화면에 추가
-        </p>
-
-        <p>
-          카카오톡에서 열었다면
-          먼저 다른 브라우저로 열어주십시오.
         </p>
 
       </div>
@@ -149,6 +157,7 @@
   <script>
     /**************************************************
      * 대회별 참가 신청 연결
+     * 2026.11.23
      **************************************************/
 
     const GS_BASE_URL =
@@ -246,13 +255,21 @@
      * PWA 서비스 워커 등록
      **************************************************/
     if ("serviceWorker" in navigator) {
+
       navigator.serviceWorker
         .register("./sw.js")
+
         .then(function() {
-          console.log("PWA 서비스 워커 등록 완료");
+          console.log(
+            "PWA 서비스 워커 등록 완료"
+          );
         })
+
         .catch(function(error) {
-          console.error("PWA 등록 실패:", error);
+          console.error(
+            "PWA 등록 실패:",
+            error
+          );
         });
     }
   </script>
