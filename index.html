@@ -42,7 +42,7 @@
       cursor: pointer;
     }
 
-    .primary {
+    .primary, .install, .done {
       background: #086cc5;
       color: white;
     }
@@ -73,14 +73,23 @@
       display: block;
     }
 
+    .guide-title {
+      font-size: 19px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
     .guide p {
-      margin: 8px 0;
+      margin: 10px 0;
     }
 
     .install {
+      margin-bottom: 12px;
+    }
+
+    .done {
       margin-top: 12px;
-      background: #086cc5;
-      color: white;
     }
 
     .loading-note {
@@ -130,7 +139,16 @@
 
       <div class="guide" id="installGuide">
 
-        <b>📲 홈 화면 바로가기 등록 방법</b>
+        <div class="guide-title">
+          📲 홈 화면 바로가기 방법
+        </div>
+
+        <button
+          class="install"
+          id="installBtn"
+          onclick="prepareHomeShortcut()">
+          홈 화면 바로가기 준비
+        </button>
 
         <p>
           <b>① 카카오톡·밴드</b><br>
@@ -139,33 +157,28 @@
 
         <p>
           <b>② 삼성 인터넷</b><br>
-          아래 준비 버튼을 누른 후<br>
-          메뉴(☰ 또는 ⋮) → 홈 화면에 추가 → 추가
+          메뉴(☰ 또는 ⋮) →
+          홈 화면에 추가 → 추가
         </p>
 
         <p>
           <b>③ 크롬</b><br>
-          아래 준비 버튼을 누른 후<br>
-          메뉴(⋮) → 홈 화면에 추가
+          메뉴(⋮) →
+          홈 화면에 추가
         </p>
 
         <p>
           <b>④ 아이폰 Safari</b><br>
-          아래 준비 버튼을 누른 후<br>
-          공유 버튼 → 홈 화면에 추가
+          공유 버튼 →
+          홈 화면에 추가
         </p>
 
         <button
-          class="install"
-          id="installBtn"
-          onclick="installApp()">
-          📲 홈 화면 바로가기 준비
+          class="done"
+          id="doneBtn"
+          onclick="finishHomeShortcut()">
+          ✅ 홈 화면 등록 완료
         </button>
-
-        <p id="readyNote" style="display:none;">
-          홈 화면에 추가한 뒤 아이콘을 누르면
-          참가 신청 화면으로 바로 이동합니다.
-        </p>
 
       </div>
     </div>
@@ -174,21 +187,24 @@
     <div id="setupPage" style="display:none;">
 
       <div class="guide show">
-        <b>📲 홈 화면 바로가기 등록 방법</b>
 
-        <p>
-          아래 준비 버튼을 누른 뒤
-          브라우저 메뉴에서 홈 화면에 추가하십시오.
-        </p>
+        <div class="guide-title">
+          📲 홈 화면 바로가기 방법
+        </div>
 
         <button
           class="install"
           id="prepareHomeBtn"
           onclick="prepareHomeShortcut()">
-          📲 홈 화면 바로가기 준비
+          홈 화면 바로가기 준비
         </button>
-      </div>
 
+        <p>
+          브라우저 메뉴에서
+          홈 화면에 추가하십시오.
+        </p>
+
+      </div>
     </div>
 
   </div>
@@ -213,11 +229,14 @@
     const PG_EVENT_STORAGE_KEY =
       "PG_LAST_EVENT_ID";
 
+    let homeShortcutReady = false;
+
     function PG_isValidEventId_(id) {
       return /^PG-\d{4}-\d{3,}$/.test(id || "");
     }
 
     function PG_saveEventId_(eventId) {
+
       if (!PG_isValidEventId_(eventId)) return;
 
       try {
@@ -231,12 +250,14 @@
     }
 
     function PG_getSavedEventId_() {
+
       try {
         const savedId =
           localStorage.getItem(PG_EVENT_STORAGE_KEY);
 
         return PG_isValidEventId_(savedId)
           ? savedId : "";
+
       } catch (error) {
         return "";
       }
@@ -277,6 +298,7 @@
       if (btn.disabled) return;
 
       btn.disabled = true;
+
       btn.textContent =
         "⏳ 참가 신청 화면 연결 중...";
 
@@ -305,7 +327,7 @@
     }
 
     /**************************************************
-     * 홈 화면 바로가기 등록 준비
+     * 홈 화면 바로가기 준비
      **************************************************/
     function prepareHomeShortcut() {
 
@@ -324,50 +346,41 @@
         null, "", url.toString()
       );
 
-      const normalPage =
-        document.getElementById("normalPage");
-
-      if (normalPage.style.display !== "none") {
-
-        const btn =
-          document.getElementById("installBtn");
-
-        btn.textContent =
-          "✅ 바로가기 준비 완료";
-
-        document.getElementById("readyNote")
-          .style.display = "block";
-
-      } else {
-
-        const btn =
-          document.getElementById("prepareHomeBtn");
-
-        btn.textContent =
-          "✅ 바로가기 준비 완료";
-      }
-    }
-
-    /**************************************************
-     * 홈 화면 등록 버튼
-     *
-     * 첫 터치 : 바로가기 준비
-     * 두 번째 터치 : 안내창 닫기
-     **************************************************/
-    function installApp() {
+      homeShortcutReady = true;
 
       const btn =
         document.getElementById("installBtn");
 
-      if (btn.dataset.ready === "1") {
-
-        closeGuide();
-        return;
+      if (btn) {
+        btn.textContent = "✅ 바로가기 준비 완료";
       }
 
-      prepareHomeShortcut();
+      const setupBtn =
+        document.getElementById("prepareHomeBtn");
 
-      btn.dataset.ready = "1";
+      if (setupBtn) {
+        setupBtn.textContent = "✅ 바로가기 준비 완료";
+      }
+    }
+
+    /**************************************************
+     * 등록 완료 버튼
+     * 안내창 닫기 및 버튼 문구 변경
+     **************************************************/
+    function finishHomeShortcut() {
+
+      if (!homeShortcutReady) {
+        prepareHomeShortcut();
+      }
+
+      document.getElementById("installGuide")
+        .classList.remove("show");
+
+      const btn =
+        document.getElementById("guideBtn");
+
+      btn.textContent = "홈 화면 바로가기 추가 ▼";
+      btn.setAttribute("aria-expanded", "false");
     }
 
     /**************************************************
@@ -378,32 +391,20 @@
       const guide =
         document.getElementById("installGuide");
 
+      const btn =
+        document.getElementById("guideBtn");
+
       const opened =
-        guide.classList.contains("show");
+        guide.classList.toggle("show");
 
-      if (opened) {
-        closeGuide();
-      } else {
-        guide.classList.add("show");
+      btn.setAttribute(
+        "aria-expanded",
+        String(opened)
+      );
 
-        document.getElementById("guideBtn")
-          .setAttribute("aria-expanded", "true");
-
-        document.getElementById("guideBtn")
-          .textContent = "홈 화면에 바로가기 추가 ▲";
-      }
-    }
-
-    function closeGuide() {
-
-      document.getElementById("installGuide")
-        .classList.remove("show");
-
-      document.getElementById("guideBtn")
-        .setAttribute("aria-expanded", "false");
-
-      document.getElementById("guideBtn")
-        .textContent = "홈 화면에 바로가기 추가 ▼";
+      btn.textContent = opened
+        ? "홈 화면에 바로가기 추가 ▲"
+        : "홈 화면에 바로가기 추가 ▼";
     }
 
     /**************************************************
