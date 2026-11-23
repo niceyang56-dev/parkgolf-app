@@ -32,23 +32,53 @@
 
     h1 {
       font-size: 25px;
+      margin: 0 0 20px;
     }
 
     p {
-      font-size: 17px;
-      line-height: 1.6;
+      font-size: 16px;
+      line-height: 1.5;
     }
 
     button {
       width: 100%;
-      padding: 17px;
+      padding: 16px 12px;
       border: 0;
       border-radius: 10px;
-      background: #086cc5;
-      color: white;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    .primary {
+      background: #086cc5;
+      color: white;
+    }
+
+    .accordion {
+      margin-top: 14px;
+      background: #e9f2fa;
+      color: #073b65;
+    }
+
+    .guide {
+      display: none;
+      margin-top: 12px;
+      padding: 15px;
+      background: #f5f8fb;
+      border: 1px solid #d5e2ed;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .guide.show {
+      display: block;
+    }
+
+    .guide p {
+      margin: 8px 0;
     }
   </style>
 </head>
@@ -56,22 +86,60 @@
 <body>
 
   <div class="card">
-    <h1>🏌️ 파크골프 참가 신청</h1>
-    <p>참가 신청 화면으로 연결하고 있습니다.</p>
 
-    <button onclick="openEvent()">
+    <h1>🏌️ 파크골프 참가 신청</h1>
+
+    <button class="primary" onclick="openEvent()">
       참가 신청 화면 열기
     </button>
+
+    <button
+      class="accordion"
+      id="guideBtn"
+      aria-expanded="false"
+      aria-controls="installGuide"
+      onclick="toggleGuide()">
+      홈 화면에 바로가기 추가 ▼
+    </button>
+
+    <div class="guide" id="installGuide">
+
+      <p>
+        <b>휴대전화 홈 화면에 바로가기를 추가할 수 있습니다.</b>
+      </p>
+
+      <p>
+        <b>삼성 인터넷</b><br>
+        메뉴(≡ 또는 ⋮) →
+        현재 페이지 추가 →
+        홈 화면
+      </p>
+
+      <p>
+        <b>크롬</b><br>
+        메뉴(⋮) →
+        홈 화면에 추가 또는 앱 설치
+      </p>
+
+      <p>
+        <b>아이폰 Safari</b><br>
+        공유 버튼 →
+        홈 화면에 추가
+      </p>
+
+      <p>
+        카카오톡에서 열었다면
+        먼저 다른 브라우저로 열어주십시오.
+      </p>
+
+    </div>
+
   </div>
 
   <script>
     /**************************************************
-     * 대회별 전용 참가 신청 연결
+     * 대회별 참가 신청 연결
      * 2026.11.23
-     *
-     * - 공유 URL의 대회ID로 연결
-     * - 마지막 대회 저장 기능 사용 안 함
-     * - 기존 GS 웹앱 유지
      **************************************************/
 
     const GS_BASE_URL =
@@ -101,13 +169,32 @@
         url.searchParams.set("preview", preview);
       }
 
-      window.location.replace(url.toString());
+      window.location.href = url.toString();
     }
 
-    // 화면이 열리면 해당 대회로 자동 이동
-    window.addEventListener("load", function() {
-      setTimeout(openEvent, 500);
-    });
+    /**************************************************
+     * 홈 화면 바로가기 설치 안내
+     **************************************************/
+    function toggleGuide() {
+
+      const guide =
+        document.getElementById("installGuide");
+
+      const button =
+        document.getElementById("guideBtn");
+
+      const opened =
+        guide.classList.toggle("show");
+
+      button.setAttribute(
+        "aria-expanded",
+        String(opened)
+      );
+
+      button.textContent = opened
+        ? "홈 화면에 바로가기 추가 ▲"
+        : "홈 화면에 바로가기 추가 ▼";
+    }
 
     /**************************************************
      * PWA 서비스 워커 등록
