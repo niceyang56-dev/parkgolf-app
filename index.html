@@ -238,6 +238,52 @@
       window.location.href = url.toString();
     }
 
+    
+    /**************************************************
+     * 2026.11.23
+     * 홈 화면 PWA 실행 시 참가 신청 자동 연결
+     *
+     * - 설치된 PWA에서 실행한 경우만 자동 이동
+     * - 일반 브라우저에서는 기존 화면 유지
+     * - 대회ID가 없는 경우 자동 이동 금지
+     **************************************************/
+    function PG_checkStandaloneAutoOpen_() {
+
+      const isStandalone =
+        window.matchMedia(
+          "(display-mode: standalone)"
+        ).matches ||
+        window.navigator.standalone === true;
+
+      if (!isStandalone) return;
+
+      const params = new URLSearchParams(
+        window.location.search
+      );
+
+      const eventId = params.get("eventId");
+
+      // 대회ID가 정확할 때만 자동 이동
+      if (!eventId ||
+          !/^PG-\d{4}-\d{3,}$/.test(eventId)) {
+        return;
+      }
+
+      // 기존 참가 신청 연결 함수 재사용
+      openEvent();
+    }
+
+    // 화면이 준비되면 자동 이동 여부 확인
+    if (document.readyState === "loading") {
+      document.addEventListener(
+        "DOMContentLoaded",
+        PG_checkStandaloneAutoOpen_
+      );
+    } else {
+      PG_checkStandaloneAutoOpen_();
+    }
+    
+
     /**************************************************
      * 다른 화면에서 뒤로 돌아왔을 때
      * 버튼 상태 복원
