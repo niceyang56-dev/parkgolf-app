@@ -184,12 +184,14 @@
   <script>
     /**************************************************
      * 대회별 참가 신청 연결
-     * 2026.11.23 개선
+     * 2026.11.23 수정 완성본
      *
      * - 기존 GS 웹앱 유지
      * - 공유 URL의 eventId, preview 전달
      * - 대회ID 기억
-     * - 홈 화면 PWA 실행 시 자동 연결
+     * - PWA 자동 연결
+     * - 삼성 인터넷 일반 바로가기 자동 연결
+     * - home=1 전용 주소 지원
      **************************************************/
 
     const GS_BASE_URL =
@@ -263,7 +265,7 @@
      *
      * - 버튼 터치 즉시 연결 중 표시
      * - 중복 터치 방지
-     * - URL의 대회ID 우선
+     * - URL 대회ID 우선
      * - 없으면 기억된 대회ID 사용
      **************************************************/
     function openEvent() {
@@ -288,9 +290,6 @@
       const requestedId = params.get("eventId");
       const preview = params.get("preview");
 
-      // URL 대회ID 우선
-      // 없으면 기억된 대회ID 사용
-      // 기존 기본 대회ID 유지
       const eventId =
         PG_isValidEventId_(requestedId)
           ? requestedId
@@ -313,13 +312,12 @@
     }
 
     /**************************************************
+     * 홈 화면 바로가기 및 PWA 자동 연결
      * 2026.11.23
-     * 홈 화면 PWA 실행 시 참가 신청 자동 연결
      *
-     * - 공유 URL 접속 시 대회ID 기억
-     * - 일반 브라우저에서는 기존 화면 유지
-     * - 설치된 PWA에서는 자동 연결
-     * - 대회ID가 없으면 자동 연결하지 않음
+     * - home=1 : 일반 바로가기에서도 자동 연결
+     * - PWA : 자동 연결
+     * - 일반 공유 링크 : 기존 두 버튼 유지
      **************************************************/
     function PG_checkStandaloneAutoOpen_() {
 
@@ -334,32 +332,30 @@
         PG_saveEventId_(requestedId);
       }
 
-      // ② 홈 화면 PWA 실행 여부 확인
+      // ② 홈 화면 전용 주소 확인
+      const isHomeLink =
+        params.get("home") === "1";
+
+      // ③ 독립 실행형 PWA 확인
       const isStandalone =
         window.matchMedia(
           "(display-mode: standalone)"
         ).matches ||
         window.navigator.standalone === true;
 
-      // 일반 브라우저는 기존 화면 유지
-      if (!isStandalone) return;
+      // ④ 일반 공유 링크는 기존 화면 유지
+      if (!isHomeLink && !isStandalone) return;
 
-      // ③ URL 대회ID 우선
-      let eventId =
+      // ⑤ URL 대회ID 우선
+      const eventId =
         PG_isValidEventId_(requestedId)
           ? requestedId
-          : "";
+          : PG_getSavedEventId_();
 
-      // ④ URL에 없으면 기억된 대회ID 조회
-      if (!eventId) {
-
-        eventId = PG_getSavedEventId_();
-      }
-
-      // ⑤ 대회ID가 없으면 기존 화면 유지
+      // ⑥ 대회ID가 없으면 자동 이동하지 않음
       if (!eventId) return;
 
-      // ⑥ 기존 openEvent 함수에 대회ID 전달
+      // ⑦ 기존 openEvent()에 대회ID 전달
       const url = new URL(window.location.href);
 
       url.searchParams.set("eventId", eventId);
@@ -370,7 +366,7 @@
         url.toString()
       );
 
-      // ⑦ 참가 신청 화면 자동 이동
+      // ⑧ 참가 신청 화면 자동 이동
       openEvent();
     }
 
