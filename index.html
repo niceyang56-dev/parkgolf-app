@@ -35,11 +35,6 @@
       margin: 0 0 20px;
     }
 
-    p {
-      font-size: 16px;
-      line-height: 1.5;
-    }
-
     button {
       width: 100%;
       padding: 16px 12px;
@@ -70,15 +65,29 @@
       border-radius: 10px;
       text-align: left;
       font-size: 16px;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     .guide.show {
       display: block;
     }
 
-    .guide p {
-      margin: 8px 0;
+    .install {
+      background: #086cc5;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .instructions {
+      display: none;
+    }
+
+    .instructions.show {
+      display: block;
+    }
+
+    .instructions p {
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -104,33 +113,34 @@
 
     <div class="guide" id="installGuide">
 
-      <p>
-        <b>휴대전화 홈 화면에 바로가기를 추가할 수 있습니다.</b>
-      </p>
+      <button class="install" onclick="installApp()">
+        📲 홈 화면에 설치하기
+      </button>
 
-      <p>
-        <b>삼성 인터넷</b><br>
-        메뉴(≡ 또는 ⋮) →
-        현재 페이지 추가 →
-        홈 화면
-      </p>
+      <div class="instructions" id="instructions">
 
-      <p>
-        <b>크롬</b><br>
-        메뉴(⋮) →
-        홈 화면에 추가 또는 앱 설치
-      </p>
+        <p><b>삼성 인터넷</b><br>
+          메뉴(≡ 또는 ⋮) →
+          현재 페이지 추가 →
+          홈 화면
+        </p>
 
-      <p>
-        <b>아이폰 Safari</b><br>
-        공유 버튼 →
-        홈 화면에 추가
-      </p>
+        <p><b>크롬</b><br>
+          메뉴(⋮) →
+          홈 화면에 추가 또는 앱 설치
+        </p>
 
-      <p>
-        카카오톡에서 열었다면
-        먼저 다른 브라우저로 열어주십시오.
-      </p>
+        <p><b>아이폰 Safari</b><br>
+          공유 버튼 →
+          홈 화면에 추가
+        </p>
+
+        <p>
+          카카오톡에서 열었다면
+          먼저 다른 브라우저로 열어주십시오.
+        </p>
+
+      </div>
 
     </div>
 
@@ -139,7 +149,6 @@
   <script>
     /**************************************************
      * 대회별 참가 신청 연결
-     * 2026.11.23
      **************************************************/
 
     const GS_BASE_URL =
@@ -173,7 +182,7 @@
     }
 
     /**************************************************
-     * 홈 화면 바로가기 설치 안내
+     * 홈 화면 설치 안내 아코디언
      **************************************************/
     function toggleGuide() {
 
@@ -194,6 +203,43 @@
       button.textContent = opened
         ? "홈 화면에 바로가기 추가 ▲"
         : "홈 화면에 바로가기 추가 ▼";
+    }
+
+    /**************************************************
+     * 설치 확인창 호출
+     **************************************************/
+    let deferredPrompt = null;
+
+    window.addEventListener(
+      "beforeinstallprompt",
+      function(event) {
+        event.preventDefault();
+        deferredPrompt = event;
+      }
+    );
+
+    async function installApp() {
+
+      if (deferredPrompt) {
+
+        const promptEvent = deferredPrompt;
+        deferredPrompt = null;
+
+        try {
+          await promptEvent.prompt();
+        } catch (error) {
+          console.warn("설치 요청 실패:", error);
+          showInstructions();
+        }
+
+      } else {
+        showInstructions();
+      }
+    }
+
+    function showInstructions() {
+      document.getElementById("instructions")
+        .classList.add("show");
     }
 
     /**************************************************
