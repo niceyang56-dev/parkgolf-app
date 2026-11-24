@@ -148,7 +148,6 @@ button {
 
   <h1>🏌️ 대회 참가 신청</h1>
 
-  <!-- 참가 신청 버튼 -->
   <button class="primary"
           id="openEventBtn"
           onclick="openEvent()">
@@ -159,7 +158,6 @@ button {
     참가 신청 화면 연결 중...
   </div>
 
-  <!-- 홈 화면 바로가기 안내 버튼 -->
   <button class="accordion"
           id="guideBtn"
           aria-expanded="false"
@@ -168,10 +166,8 @@ button {
     홈 화면에 바로가기 추가 ▼
   </button>
 
-  <!-- 안내창 시작 -->
   <div class="guide" id="installGuide">
 
-    <!-- 2번 화면 : 최초 안내 -->
     <div id="beforePrepare">
 
       <div class="guide-title">
@@ -180,20 +176,17 @@ button {
 
       <div class="notice" style="text-align:center;">
         화면의 <b>점 세 개(⋮)</b>를 누르십시오.<br>
-        <b>「다른 브라우저로 열기」</b>를
-        선택하십시오.
+        <b>「다른 브라우저로 열기」</b>를 선택하십시오.
       </div>
 
     </div>
 
-    <!-- 3번 화면 : 기존 안내 보존 -->
     <div id="completeArea">
 
       <div class="notice">
         <b>카카오톡·밴드에서 접속하셨나요?</b><br>
         화면 메뉴(⋮)에서
-        <b>다른 브라우저로 열기</b>를
-        선택하십시오.
+        <b>다른 브라우저로 열기</b>를 선택하십시오.
       </div>
 
       <div class="guide-title">
@@ -230,10 +223,8 @@ button {
     </div>
 
   </div>
-  <!-- 안내창 끝 -->
 
 </div>
-<!-- 카드 끝 -->
 
 <script>
 /**************************************************
@@ -241,8 +232,9 @@ button {
  * index.html
  * 2026.11.24
  *
- * HTML 구조 정리
- * 기존 GS 연결 및 안내 기능 유지
+ * 브라우저별 안내 자동 표시
+ * 홈 화면 바로가기 실행 주소 처리
+ * 화면 복원 시 자동 연결 보완
  **************************************************/
 
 const GS_BASE_URL =
@@ -252,9 +244,6 @@ const GS_BASE_URL =
 
 const EVENT_KEY = "PG_LAST_EVENT_ID";
 
-/**************************************************
- * 대회ID 검증
- **************************************************/
 function validEventId(id) {
   return /^PG-\d{4}-\d{3,}$/.test(id || "");
 }
@@ -317,8 +306,7 @@ function openEvent() {
 
   saveEventId(id);
 
-  const btn =
-    document.getElementById("openEventBtn");
+  const btn = document.getElementById("openEventBtn");
 
   btn.disabled = true;
   btn.textContent = "연결 중...";
@@ -327,12 +315,10 @@ function openEvent() {
     .style.display = "block";
 
   const url = new URL(GS_BASE_URL);
-
   url.searchParams.set("eventId", id);
 
   const preview =
-    new URLSearchParams(location.search)
-      .get("preview");
+    new URLSearchParams(location.search).get("preview");
 
   if (preview && /^\d+$/.test(preview)) {
     url.searchParams.set("preview", preview);
@@ -346,14 +332,10 @@ function openEvent() {
  **************************************************/
 function toggleGuide() {
 
-  const guide =
-    document.getElementById("installGuide");
+  const guide = document.getElementById("installGuide");
+  const btn = document.getElementById("guideBtn");
 
-  const btn =
-    document.getElementById("guideBtn");
-
-  const opened =
-    guide.classList.toggle("show");
+  const opened = guide.classList.toggle("show");
 
   btn.textContent = opened
     ? "홈 화면에 바로가기 추가 ▲"
@@ -366,7 +348,7 @@ function toggleGuide() {
 }
 
 /**************************************************
- * 기존 바로가기 준비 함수 보존
+ * 기존 준비 함수 유지
  **************************************************/
 function prepareShortcut() {
 
@@ -385,11 +367,7 @@ function prepareShortcut() {
   url.searchParams.set("setup", "complete");
   url.searchParams.delete("home");
 
-  history.replaceState(
-    null,
-    "",
-    url.toString()
-  );
+  history.replaceState(null, "", url.toString());
 
   document.getElementById("beforePrepare")
     .style.display = "none";
@@ -398,15 +376,16 @@ function prepareShortcut() {
     .style.display = "block";
 }
 
-
+/**************************************************
+ * 홈 화면 실행 주소 여부
+ **************************************************/
+function isHomeShortcut() {
+  const params = new URLSearchParams(location.search);
+  return params.get("home") === "1";
+}
 
 /**************************************************
  * 화면 초기화
- * 2026.11.24
- *
- * - 브라우저별 안내문 구분
- * - 외부 브라우저 전환 시 안내 자동 표시
- * - 참가 신청 연결 기능 유지
  **************************************************/
 function initializePage() {
 
@@ -425,6 +404,12 @@ function initializePage() {
   const isSamsung = /SamsungBrowser/i.test(ua);
   const isInApp = /KAKAOTALK|BAND\//i.test(ua);
   const isChrome = /Chrome|CriOS/i.test(ua);
+
+  // 홈 화면 실행 주소로 새로 열린 경우 우선 연결
+  if (isHomeShortcut() && id) {
+    openEvent();
+    return;
+  }
 
   // 브라우저별 안내문
   if (isSamsung) {
@@ -486,33 +471,23 @@ function initializePage() {
     guideBtn.setAttribute("aria-expanded", "true");
 
     before.style.display = "none";
+
     document.getElementById("completeArea")
       .style.display = "block";
 
     return;
   }
 
-  // 홈 화면 바로가기 실행 시 참가 신청 연결
-  const homeMode = params.get("home") === "1";
-
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     navigator.standalone === true;
 
-  if ((homeMode || standalone) && id) {
+  if (standalone && id) {
     openEvent();
     return;
   }
 
-  
-  /**************************************************
-   * 홈 화면 바로가기 실행 주소 준비
-   * 2026.11.24
-   *
-   * - 삼성 인터넷 안내 화면은 그대로 유지
-   * - 주소에 해당 대회ID와 home=1 추가
-   * - 홈 화면 바로가기 실행 시 GS 자동 연결
-   **************************************************/
+  // 삼성 인터넷에서 홈 화면 추가용 주소 준비
   if (isSamsung && id) {
 
     const shortcutUrl = new URL(location.href);
@@ -521,7 +496,6 @@ function initializePage() {
     shortcutUrl.searchParams.set("home", "1");
     shortcutUrl.searchParams.delete("setup");
 
-    // 화면 이동 없이 주소만 변경
     history.replaceState(
       null,
       "",
@@ -529,10 +503,9 @@ function initializePage() {
     );
   }
 
-
-  // 안내창 자동 표시
-  // 삼성 인터넷 또는 크롬으로 열면 자동 펼침
-  if (isSamsung || (isChrome && !isInApp) ||
+  // 삼성 인터넷 또는 크롬에서 안내 자동 표시
+  if (isSamsung ||
+      (isChrome && !isInApp) ||
       params.get("setup") === "1") {
 
     guide.classList.add("show");
@@ -541,26 +514,44 @@ function initializePage() {
   }
 }
 
+/**************************************************
+ * 화면 재표시 처리
+ * - 삼성 인터넷 화면 복원 대응
+ * - home=1이면 GS 참가 신청으로 이동
+ **************************************************/
+window.addEventListener("pageshow", function () {
 
+  const id = getEventId();
+
+  if (isHomeShortcut() && id) {
+    openEvent();
+    return;
+  }
+
+  const btn = document.getElementById("openEventBtn");
+
+  btn.disabled = false;
+  btn.textContent = "참가 신청 화면 열기";
+
+  document.getElementById("loadingNote")
+    .style.display = "none";
+});
 
 /**************************************************
- * 뒤로 돌아왔을 때 버튼 복구
+ * 삼성 인터넷 탭 복귀 시 확인
  **************************************************/
-window.addEventListener(
-  "pageshow",
-  function () {
+document.addEventListener("visibilitychange", function () {
 
-    const btn =
-      document.getElementById("openEventBtn");
-
-    btn.disabled = false;
-    btn.textContent =
-      "참가 신청 화면 열기";
-
-    document.getElementById("loadingNote")
-      .style.display = "none";
+  if (document.visibilityState !== "visible") {
+    return;
   }
-);
+
+  const id = getEventId();
+
+  if (isHomeShortcut() && id) {
+    openEvent();
+  }
+});
 
 /**************************************************
  * 화면 시작
@@ -583,8 +574,7 @@ if (document.readyState === "loading") {
  **************************************************/
 if ("serviceWorker" in navigator) {
 
-  navigator.serviceWorker
-    .register("./sw.js")
+  navigator.serviceWorker.register("./sw.js")
     .catch(function (error) {
       console.warn("서비스 워커:", error);
     });
