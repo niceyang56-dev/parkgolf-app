@@ -6,7 +6,29 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1">
 
+
 <title>대회 참가 신청</title>
+
+<!-- 2026.11.24 대회별 바로가기 이름 자동 설정 -->
+<script>
+(function () {
+
+  const params = new URLSearchParams(location.search);
+  const eventName = params.get("eventName");
+
+  if (!eventName) return;
+
+  const name = eventName.trim();
+
+  if (!name) return;
+
+  document.title = name.includes("참가 신청")
+    ? name
+    : name + " 참가 신청";
+
+})();
+</script>
+
 
 <link rel="icon" type="image/png" href="./parkgolf-192.png">
 <link rel="apple-touch-icon" href="./parkgolf-192.png">
