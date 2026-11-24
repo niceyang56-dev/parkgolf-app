@@ -1,0 +1,27 @@
+
+{
+  "id": "/parkgolf-app/PG-2026-004",
+  "name": "파크골프 참가 신청 - PG-2026-004",
+  "short_name": "파크골프 신청",
+  "description": "PG-2026-004 대회 참가 신청",
+  "start_url": "/parkgolf-app/?eventId=PG-2026-004&home=1",
+  "scope": "/parkgolf-app/",
+  "display": "standalone",
+  "background_color": "#f0f5fa",
+  "theme_color": "#086cc5",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "parkgolf-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "parkgolf-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
