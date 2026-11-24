@@ -398,41 +398,89 @@ function prepareShortcut() {
     .style.display = "block";
 }
 
+
 /**************************************************
  * 화면 초기화
+ * 2026.11.24 브라우저별 안내문 구분
  **************************************************/
 function initializePage() {
 
-  const params =
-    new URLSearchParams(location.search);
-
+  const params = new URLSearchParams(location.search);
   const id = getEventId();
 
   if (id) {
     saveEventId(id);
   }
 
-  // 기존 3번 안내 화면 유지
+  const ua = navigator.userAgent || "";
+  const before = document.getElementById("beforePrepare");
+
+  // 삼성 인터넷
+  if (/SamsungBrowser/i.test(ua)) {
+
+    before.innerHTML = `
+      <div class="guide-title">
+        홈 화면에 바로가기를 추가하시겠습니까?
+      </div>
+      <div class="notice" style="text-align:center;">
+        화면 아래 <b>메뉴(☰ 또는 ⋮)</b>를 누르십시오.<br>
+        <b>「현재 페이지에 추가」</b>를 선택하십시오.<br>
+        <b>「홈 화면」 → 「추가」</b>를 누르십시오.
+      </div>
+    `;
+
+  // 카카오톡·밴드 내부 브라우저
+  } else if (/KAKAOTALK|BAND\//i.test(ua)) {
+
+    before.innerHTML = `
+      <div class="guide-title">
+        홈 화면에 바로가기를 추가하시겠습니까?
+      </div>
+      <div class="notice" style="text-align:center;">
+        화면의 <b>점 세 개(⋮)</b>를 누르십시오.<br>
+        <b>「다른 브라우저로 열기」</b>를 선택하십시오.
+      </div>
+    `;
+
+  // 크롬
+  } else if (/Chrome|CriOS/i.test(ua)) {
+
+    before.innerHTML = `
+      <div class="guide-title">
+        홈 화면에 바로가기를 추가하시겠습니까?
+      </div>
+      <div class="notice" style="text-align:center;">
+        크롬의 <b>메뉴(⋮)</b>를 누르십시오.<br>
+        <b>「홈 화면에 추가」</b>를 선택하십시오.<br>
+        바로가기 추가 항목이 나오면 선택하십시오.
+      </div>
+    `;
+
+  // 그 밖의 브라우저
+  } else {
+
+    before.innerHTML = `
+      <div class="guide-title">
+        홈 화면에 바로가기를 추가하시겠습니까?
+      </div>
+      <div class="notice" style="text-align:center;">
+        브라우저의 메뉴 또는 공유 버튼에서<br>
+        <b>「홈 화면에 추가」</b>를 선택하십시오.
+      </div>
+    `;
+  }
+
+  // 기존 3번 안내 화면
   if (params.get("setup") === "complete") {
 
-    const guide =
-      document.getElementById("installGuide");
-
-    const guideBtn =
-      document.getElementById("guideBtn");
+    const guide = document.getElementById("installGuide");
+    const guideBtn = document.getElementById("guideBtn");
 
     guide.classList.add("show");
+    guideBtn.textContent = "홈 화면에 바로가기 추가 ▲";
+    guideBtn.setAttribute("aria-expanded", "true");
 
-    guideBtn.textContent =
-      "홈 화면에 바로가기 추가 ▲";
-
-    guideBtn.setAttribute(
-      "aria-expanded",
-      "true"
-    );
-
-    document.getElementById("beforePrepare")
-      .style.display = "none";
+    before.style.display = "none";
 
     document.getElementById("completeArea")
       .style.display = "block";
@@ -445,19 +493,17 @@ function initializePage() {
     return;
   }
 
-  const homeMode =
-    params.get("home") === "1";
+  const homeMode = params.get("home") === "1";
 
   const standalone =
-    window.matchMedia(
-      "(display-mode: standalone)"
-    ).matches ||
+    window.matchMedia("(display-mode: standalone)").matches ||
     navigator.standalone === true;
 
   if ((homeMode || standalone) && id) {
     openEvent();
   }
 }
+
 
 /**************************************************
  * 뒤로 돌아왔을 때 버튼 복구
