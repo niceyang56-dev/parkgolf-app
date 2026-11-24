@@ -399,9 +399,14 @@ function prepareShortcut() {
 }
 
 
+
 /**************************************************
  * 화면 초기화
- * 2026.11.24 브라우저별 안내문 구분
+ * 2026.11.24
+ *
+ * - 브라우저별 안내문 구분
+ * - 외부 브라우저 전환 시 안내 자동 표시
+ * - 참가 신청 연결 기능 유지
  **************************************************/
 function initializePage() {
 
@@ -414,9 +419,15 @@ function initializePage() {
 
   const ua = navigator.userAgent || "";
   const before = document.getElementById("beforePrepare");
+  const guide = document.getElementById("installGuide");
+  const guideBtn = document.getElementById("guideBtn");
 
-  // 삼성 인터넷
-  if (/SamsungBrowser/i.test(ua)) {
+  const isSamsung = /SamsungBrowser/i.test(ua);
+  const isInApp = /KAKAOTALK|BAND\//i.test(ua);
+  const isChrome = /Chrome|CriOS/i.test(ua);
+
+  // 브라우저별 안내문
+  if (isSamsung) {
 
     before.innerHTML = `
       <div class="guide-title">
@@ -429,8 +440,7 @@ function initializePage() {
       </div>
     `;
 
-  // 카카오톡·밴드 내부 브라우저
-  } else if (/KAKAOTALK|BAND\//i.test(ua)) {
+  } else if (isInApp) {
 
     before.innerHTML = `
       <div class="guide-title">
@@ -442,8 +452,7 @@ function initializePage() {
       </div>
     `;
 
-  // 크롬
-  } else if (/Chrome|CriOS/i.test(ua)) {
+  } else if (isChrome) {
 
     before.innerHTML = `
       <div class="guide-title">
@@ -456,7 +465,6 @@ function initializePage() {
       </div>
     `;
 
-  // 그 밖의 브라우저
   } else {
 
     before.innerHTML = `
@@ -470,29 +478,21 @@ function initializePage() {
     `;
   }
 
-  // 기존 3번 안내 화면
+  // 기존 3번 안내 화면 유지
   if (params.get("setup") === "complete") {
-
-    const guide = document.getElementById("installGuide");
-    const guideBtn = document.getElementById("guideBtn");
 
     guide.classList.add("show");
     guideBtn.textContent = "홈 화면에 바로가기 추가 ▲";
     guideBtn.setAttribute("aria-expanded", "true");
 
     before.style.display = "none";
-
     document.getElementById("completeArea")
       .style.display = "block";
 
     return;
   }
 
-  if (params.get("setup") === "1") {
-    toggleGuide();
-    return;
-  }
-
+  // 홈 화면 바로가기 실행 시 참가 신청 연결
   const homeMode = params.get("home") === "1";
 
   const standalone =
@@ -501,8 +501,20 @@ function initializePage() {
 
   if ((homeMode || standalone) && id) {
     openEvent();
+    return;
+  }
+
+  // 안내창 자동 표시
+  // 삼성 인터넷 또는 크롬으로 열면 자동 펼침
+  if (isSamsung || (isChrome && !isInApp) ||
+      params.get("setup") === "1") {
+
+    guide.classList.add("show");
+    guideBtn.textContent = "홈 화면에 바로가기 추가 ▲";
+    guideBtn.setAttribute("aria-expanded", "true");
   }
 }
+
 
 
 /**************************************************
