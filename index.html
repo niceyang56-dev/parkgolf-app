@@ -150,7 +150,7 @@ button {
 
   <div class="guide" id="installGuide">
 
-    <!-- 2번 화면 : 실행 선택 -->
+    <!-- 2번 화면 -->
     <div id="beforePrepare">
 
       <div class="guide-title">
@@ -165,17 +165,15 @@ button {
 
     </div>
 
-    <!-- 3번 화면 : 실행 준비 완료 -->
+    <!-- 3번 화면 -->
     <div id="completeArea">
 
-      <!-- 가장 위 : 카카오톡·밴드 안내 -->
       <div class="notice">
         <b>카카오톡·밴드에서 접속하셨나요?</b><br>
         화면 메뉴(⋮)에서
         <b>다른 브라우저로 열기</b>를 선택하십시오.
       </div>
 
-      <!-- 브라우저별 설치 안내 -->
       <div class="guide-title">
         브라우저별 홈 화면 추가 방법
       </div>
@@ -197,12 +195,10 @@ button {
         공유 버튼 → 홈 화면에 추가
       </div>
 
-      <!-- 겨자색 완료 표시 -->
       <div class="complete">
         ✅ 바로가기 실행 준비 완료
       </div>
 
-      <!-- 마지막 안내 -->
       <div class="step">
         <b>④ 등록 후</b><br>
         홈 화면에 추가된 아이콘을 누르면
@@ -219,10 +215,10 @@ button {
 /**************************************************
  * 파크골프 참가 신청
  * index.html
- * 2026.11.23
+ * 2026.11.24
  *
- * 1번 → 2번 → 3번 화면 표시 순서 개선
- * 기존 참가 신청 연결 기능 유지
+ * 1·2·3번 화면 구성 유지
+ * 외부 브라우저 전환 시 자동 이동 방지
  **************************************************/
 
 const GS_BASE_URL =
@@ -340,9 +336,9 @@ function toggleGuide() {
 
 /**************************************************
  * 홈 화면 바로가기 준비
+ * 2026.11.24 수정
  *
- * 기존 주소 처리 방식 유지
- * 이번 수정은 안내문 배치만 변경
+ * home=1 대신 setup=complete 사용
  **************************************************/
 function prepareShortcut() {
 
@@ -358,8 +354,8 @@ function prepareShortcut() {
   const url = new URL(location.href);
 
   url.searchParams.set("eventId",id);
-  url.searchParams.set("home","1");
-  url.searchParams.delete("setup");
+  url.searchParams.set("setup","complete");
+  url.searchParams.delete("home");
 
   history.replaceState(
     null,
@@ -376,6 +372,11 @@ function prepareShortcut() {
 
 /**************************************************
  * 화면 초기화
+ * 2026.11.24 수정
+ *
+ * setup=complete : 3번 안내 화면
+ * home=1        : 참가 신청 화면 자동 연결
+ * 일반 접속      : 1번 화면
  **************************************************/
 function initializePage() {
 
@@ -384,6 +385,31 @@ function initializePage() {
 
   if (id) {
     saveEventId(id);
+  }
+
+  // 3번 안내 화면 유지
+  if (params.get("setup") === "complete") {
+
+    const guide = document.getElementById("installGuide");
+    const guideBtn = document.getElementById("guideBtn");
+
+    guide.classList.add("show");
+
+    guideBtn.textContent =
+      "홈 화면에 바로가기 추가 ▲";
+
+    guideBtn.setAttribute(
+      "aria-expanded",
+      "true"
+    );
+
+    document.getElementById("beforePrepare")
+      .style.display = "none";
+
+    document.getElementById("completeArea")
+      .style.display = "block";
+
+    return;
   }
 
   if (params.get("setup") === "1") {
