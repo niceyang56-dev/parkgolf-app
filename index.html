@@ -8,7 +8,20 @@
 
 <title>대회 참가 신청</title>
 
-<link rel="manifest" href="./manifest.webmanifest">
+
+<link id="pgManifest" rel="manifest" href="./manifest.webmanifest">
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const eventId = params.get("eventId");
+
+  if (eventId === "PG-2026-004") {
+    document.getElementById("pgManifest").href =
+      "./manifest-PG-2026-004.webmanifest";
+  }
+})();
+</script>
+
 <link rel="icon" type="image/png" href="./parkgolf-192.png">
 <link rel="apple-touch-icon" href="./parkgolf-192.png">
 
