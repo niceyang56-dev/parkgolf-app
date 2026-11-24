@@ -504,6 +504,32 @@ function initializePage() {
     return;
   }
 
+  
+  /**************************************************
+   * 홈 화면 바로가기 실행 주소 준비
+   * 2026.11.24
+   *
+   * - 삼성 인터넷 안내 화면은 그대로 유지
+   * - 주소에 해당 대회ID와 home=1 추가
+   * - 홈 화면 바로가기 실행 시 GS 자동 연결
+   **************************************************/
+  if (isSamsung && id) {
+
+    const shortcutUrl = new URL(location.href);
+
+    shortcutUrl.searchParams.set("eventId", id);
+    shortcutUrl.searchParams.set("home", "1");
+    shortcutUrl.searchParams.delete("setup");
+
+    // 화면 이동 없이 주소만 변경
+    history.replaceState(
+      null,
+      "",
+      shortcutUrl.toString()
+    );
+  }
+
+
   // 안내창 자동 표시
   // 삼성 인터넷 또는 크롬으로 열면 자동 펼침
   if (isSamsung || (isChrome && !isInApp) ||
