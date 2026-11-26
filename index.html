@@ -484,6 +484,10 @@ shortcutReady = true;
 
 showGuide();
 
+// 2026.11.26 준비 완료 시 중복 안내 제목 숨기기
+document.getElementById("guideTitle")
+  .style.display = "none";
+
 // 2026.11.26 바로가기 추가 완료 버튼 표시
 document.getElementById("shortcutCompleteBtn")
   .style.display = "block";
@@ -504,12 +508,19 @@ document.getElementById("shortcutCompleteBtn")
       "<b>「현재 페이지에 추가」</b>를 선택하십시오.<br>" +
       "<b>「홈 화면」 → 「추가」</b>를 누르십시오.";
 
+    } else if (browserType() === "chrome") {
+
+    message.innerHTML =
+      "<b>바로가기 주소가 준비되었습니다.</b><br><br>" +
+      "브라우저 <b>메뉴(⋮)</b>를 누르십시오.<br>" +
+      "<b>「설치 및 바로가기 만들기」</b> 선택 후<br>" +
+      "<b>「바로가기 만들기」 → 「추가」</b>를 누르십시오.";
+
   } else {
 
     message.innerHTML =
       "<b>바로가기 주소가 준비되었습니다.</b><br><br>" +
-      "브라우저 메뉴에서 <b>「홈 화면에 추가」</b>를 선택하십시오.<br>" +
-      "앱 설치 대신 바로가기 추가 항목이 있으면 선택하십시오.";
+      "브라우저 메뉴에서 <b>「홈 화면에 추가」</b>를 선택하십시오.";
 
   }
 }
