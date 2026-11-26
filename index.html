@@ -153,6 +153,53 @@ button {
 
     <div class="notice" id="guideMessage"></div>
 
+<!-- 2026.11.26 바로가기 추가 완료 버튼 -->
+<button id="shortcutCompleteBtn"
+        class="primary"
+        style="display:none; margin-top:20px;"
+        onclick="completeShortcut()">
+  ✓ 바로가기 추가 완료
+</button>
+
+<!-- 2026.11.26 바로가기 완료 메시지 -->
+<div id="shortcutCompleteArea"
+     style="display:none; text-align:center;">
+
+  <div style="
+    color:#218838;
+    font-size:36px;
+    font-weight:700;
+    margin:10px 0;
+  ">
+    ✓
+  </div>
+
+  <div style="
+    color:#218838;
+    font-size:20px;
+    font-weight:700;
+    line-height:1.5;
+    margin-bottom:15px;
+  ">
+    홈 화면에 바로가기 추가가<br>
+    완료되었습니다.
+  </div>
+
+  <div style="
+    font-size:18px;
+    line-height:1.5;
+  ">
+    이제 휴대전화 홈 화면의<br>
+    아이콘을 터치하여 이용하십시오.
+  </div>
+
+  <button class="primary"
+          style="margin-top:16px;"
+          onclick="closeShortcutGuide()">
+    확인
+  </button>
+
+</div>
     <button class="execute"
             id="shortcutPrepareBtn"
             onclick="prepareShortcut()">
@@ -433,9 +480,13 @@ function showReady() {
 
   history.replaceState(null,"",url.toString());
 
-  shortcutReady = true;
+shortcutReady = true;
 
-  showGuide();
+showGuide();
+
+// 2026.11.26 바로가기 추가 완료 버튼 표시
+document.getElementById("shortcutCompleteBtn")
+  .style.display = "block";
 
   const message =
     document.getElementById("guideMessage");
@@ -462,6 +513,53 @@ function showReady() {
 
   }
 }
+
+/**************************************************
+ * 2026.11.26 바로가기 추가 완료 확인
+ **************************************************/
+
+function completeShortcut() {
+
+  // 기존 안내 제목 숨기기
+  document.getElementById("guideTitle")
+    .style.display = "none";
+
+  // 기존 안내문 숨기기
+  document.getElementById("guideMessage")
+    .style.display = "none";
+
+  // 주소 준비 버튼 숨기기
+  document.getElementById("shortcutPrepareBtn")
+    .style.display = "none";
+
+  // 완료 버튼 숨기기
+  document.getElementById("shortcutCompleteBtn")
+    .style.display = "none";
+
+  // 완료 메시지 표시
+  document.getElementById("shortcutCompleteArea")
+    .style.display = "block";
+
+}
+
+/**************************************************
+ * 2026.11.26 완료 확인 후 안내창 닫기
+ **************************************************/
+
+function closeShortcutGuide() {
+
+  document.getElementById("installGuide")
+    .classList.remove("show");
+
+  const btn =
+    document.getElementById("guideBtn");
+
+  btn.textContent =
+    "홈 화면에 바로가기 추가 ▼";
+
+  btn.setAttribute("aria-expanded","false");
+
+}      
 
 /**************************************************
  * 핵심 개선 ③
