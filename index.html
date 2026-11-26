@@ -153,53 +153,54 @@ button {
 
     <div class="notice" id="guideMessage"></div>
 
-<!-- 2026.11.26 바로가기 추가 완료 버튼 -->
-<button id="shortcutCompleteBtn"
-        class="primary"
-        style="display:none; margin-top:20px;"
-        onclick="completeShortcut()">
-  ✓ 바로가기 추가 완료
-</button>
+    <!-- 2026.11.26 바로가기 추가 완료 버튼 -->
+    <button id="shortcutCompleteBtn"
+            class="primary"
+            style="display:none; margin-top:20px;"
+            onclick="completeShortcut()">
+      ✓ 바로가기 추가 완료
+    </button>
 
-<!-- 2026.11.26 바로가기 완료 메시지 -->
-<div id="shortcutCompleteArea"
-     style="display:none; text-align:center;">
+    <!-- 2026.11.26 바로가기 완료 메시지 -->
+    <div id="shortcutCompleteArea"
+         style="display:none; text-align:center;">
 
-  <div style="
-    color:#218838;
-    font-size:36px;
-    font-weight:700;
-    margin:10px 0;
-  ">
-    ✓
-  </div>
+      <div style="
+        color:#218838;
+        font-size:36px;
+        font-weight:700;
+        margin:10px 0;
+      ">
+        ✓
+      </div>
 
-  <div style="
-    color:#218838;
-    font-size:20px;
-    font-weight:700;
-    line-height:1.5;
-    margin-bottom:15px;
-  ">
-    홈 화면에 바로가기 추가가<br>
-    완료되었습니다.
-  </div>
+      <div style="
+        color:#218838;
+        font-size:20px;
+        font-weight:700;
+        line-height:1.5;
+        margin-bottom:15px;
+      ">
+        홈 화면에 바로가기 추가가<br>
+        완료되었습니다.
+      </div>
 
-  <div style="
-    font-size:18px;
-    line-height:1.5;
-  ">
-    이제 휴대전화 홈 화면의<br>
-    아이콘을 터치하여 이용하십시오.
-  </div>
+      <div style="
+        font-size:18px;
+        line-height:1.5;
+      ">
+        이제 휴대전화 홈 화면의<br>
+        아이콘을 터치하여 이용하십시오.
+      </div>
 
-  <button class="primary"
-          style="margin-top:16px;"
-          onclick="closeShortcutGuide()">
-    확인
-  </button>
+      <button class="primary"
+              style="margin-top:16px;"
+              onclick="closeShortcutGuide()">
+        확인
+      </button>
 
-</div>
+    </div>
+
     <button class="execute"
             id="shortcutPrepareBtn"
             onclick="prepareShortcut()">
@@ -344,6 +345,7 @@ function browserType() {
 
 /**************************************************
  * 안내창 표시
+ * 2026.11.26 펼치기 버튼 숨김 개선
  **************************************************/
 
 function showGuide() {
@@ -352,6 +354,9 @@ function showGuide() {
   const btn = document.getElementById("guideBtn");
 
   guide.classList.add("show");
+
+  // 2026.11.26 안내창 표시 시 펼치기 버튼 숨김
+  btn.style.display = "none";
 
   btn.textContent = "홈 화면에 바로가기 추가 ▲";
 
@@ -374,6 +379,9 @@ function toggleGuide() {
     : "홈 화면에 바로가기 추가 ▼";
 
   btn.setAttribute("aria-expanded",String(opened));
+
+  // 2026.11.26 안내창이 열려 있는 동안 버튼 숨김
+  btn.style.display = opened ? "none" : "block";
 
   if (opened && !shortcutReady) {
     updateGuide();
@@ -480,17 +488,17 @@ function showReady() {
 
   history.replaceState(null,"",url.toString());
 
-shortcutReady = true;
+  shortcutReady = true;
 
-showGuide();
+  showGuide();
 
-// 2026.11.26 준비 완료 시 중복 안내 제목 숨기기
-document.getElementById("guideTitle")
-  .style.display = "none";
+  // 2026.11.26 준비 완료 시 중복 안내 제목 숨기기
+  document.getElementById("guideTitle")
+    .style.display = "none";
 
-// 2026.11.26 바로가기 추가 완료 버튼 표시
-document.getElementById("shortcutCompleteBtn")
-  .style.display = "block";
+  // 2026.11.26 바로가기 추가 완료 버튼 표시
+  document.getElementById("shortcutCompleteBtn")
+    .style.display = "block";
 
   const message =
     document.getElementById("guideMessage");
@@ -500,6 +508,7 @@ document.getElementById("shortcutCompleteBtn")
 
   prepareBtn.style.display = "none";
 
+  // 삼성 인터넷 전용 안내문
   if (browserType() === "samsung") {
 
     message.innerHTML =
@@ -508,7 +517,8 @@ document.getElementById("shortcutCompleteBtn")
       "<b>「현재 페이지에 추가」</b>를 선택하십시오.<br>" +
       "<b>「홈 화면」 → 「추가」</b>를 누르십시오.";
 
-    } else if (browserType() === "chrome") {
+  // Chrome 전용 안내문
+  } else if (browserType() === "chrome") {
 
     message.innerHTML =
       "<b>바로가기 주소가 준비되었습니다.</b><br><br>" +
@@ -516,6 +526,7 @@ document.getElementById("shortcutCompleteBtn")
       "<b>「설치 및 바로가기 만들기」</b> 선택 후<br>" +
       "<b>「바로가기 만들기」 → 「추가」</b>를 누르십시오.";
 
+  // 기타 브라우저
   } else {
 
     message.innerHTML =
@@ -570,7 +581,10 @@ function closeShortcutGuide() {
 
   btn.setAttribute("aria-expanded","false");
 
-}      
+  // 2026.11.26 완료 확인 후 최초 버튼 복원
+  btn.style.display = "block";
+
+}
 
 /**************************************************
  * 핵심 개선 ③
@@ -606,9 +620,8 @@ function initializePage() {
 
     const btn = document.getElementById("guideBtn");
 
-    btn.disabled = true;
-    btn.style.opacity = "0.45";
-    btn.style.cursor = "default";
+    // 2026.11.26 밴드 안내 화면에서 버튼 숨김
+    btn.style.display = "none";
 
     updateGuide();
     showGuide();
