@@ -416,22 +416,18 @@ function updateGuide() {
       "화면의 <b>점 세 개(⋮)</b>를 누르십시오.<br>" +
       "<b>「다른 브라우저로 열기」</b>를 선택하십시오.";
 
-  } else if (type === "samsung") {
+  } else if (type === "samsung" || type === "chrome") {
 
+    // 2026.11.27 중복 질문 숨기기
+    document.getElementById("guideTitle")
+      .style.display = "none";
+
+    // 안내문 글자 굵게 강조
     message.innerHTML =
-      "홈 화면 바로가기를 만들려면<br>" +
-      "아래 버튼을 먼저 누르십시오.";
+      "<b>홈 화면 바로가기를 만들려면<br>" +
+      "아래 버튼을 먼저 누르십시오.</b>";
 
     prepareBtn.style.display = "block";
-
-  } else if (type === "chrome") {
-
-    message.innerHTML =
-      "홈 화면 바로가기를 만들려면<br>" +
-      "아래 버튼을 먼저 누르십시오.";
-
-    prepareBtn.style.display = "block";
-
   } else if (type === "safari") {
 
     message.innerHTML =
